@@ -7,6 +7,13 @@ import styles from "./JsonView.module.css";
 type HoverBridge = CSSProperties | undefined;
 type HoverPosition = { left: number; top: number } | undefined;
 
+const entityChipPrefix = (kind: EntityChip["kind"]): string => {
+  if (kind === "channel") return "#";
+  if (kind === "group") return "@";
+  if (kind === "stamp") return ":";
+  return "";
+};
+
 export const EntityChipView = ({ chip }: { chip: EntityChip }) => {
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState<HoverPosition>();
@@ -14,7 +21,7 @@ export const EntityChipView = ({ chip }: { chip: EntityChip }) => {
   const openTimerRef = useRef<number | null>(null);
   const closeTimerRef = useRef<number | null>(null);
   const detailId = useId();
-  const prefix = chip.kind === "channel" ? "#" : chip.kind === "stamp" ? ":" : "";
+  const prefix = entityChipPrefix(chip.kind);
 
   const clearCloseTimer = () => {
     if (closeTimerRef.current === null) return;

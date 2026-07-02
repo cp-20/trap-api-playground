@@ -25,13 +25,6 @@ let apiTypesRegistered = false;
 let formatProviderRegistered = false;
 let monacoThemeRegistered = false;
 
-const RUNTIME_GLOBAL_TYPES = `
-type TraqChannelWithFullPath = Traq.Channel & { fullPath: string };
-declare const me: Traq.MyUserDetail | null;
-declare const users: Traq.User[];
-declare const channels: TraqChannelWithFullPath[];
-declare const groups: Traq.UserGroup[];
-`;
 const RUNTIME_SCOPE_TYPES_PATH = "file:///traq-api-playground-runtime-scope.d.ts";
 const IDENTIFIER_PATTERN = /^[A-Za-z_$][A-Za-z0-9_$]*$/u;
 
@@ -44,7 +37,7 @@ const ensureApiTypes = (monaco: Monaco): void => {
   if (apiTypesRegistered) return;
   apiTypesRegistration ??= import("../../generated/traq-api-types").then(({ traqApiTypes }) => {
     monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      `${traqApiTypes}\n${RUNTIME_GLOBAL_TYPES}`,
+      traqApiTypes,
       "file:///traq-api-playground.d.ts",
     );
     apiTypesRegistered = true;
@@ -102,6 +95,14 @@ const cellIdFromEditor = (editor: MountedEditor, fallback: string): string => {
   const modelPath = editor.getModel()?.uri.path;
   const fileName = modelPath?.split("/").at(-1);
   return fileName?.endsWith(".ts") ? fileName.slice(0, -3) : fallback;
+};
+
+const isSuggestWidgetVisible = (): boolean => {
+  const widget = document.querySelector(".suggest-widget.visible");
+  if (!widget) return false;
+
+  const style = getComputedStyle(widget);
+  return style.display !== "none" && style.visibility !== "hidden";
 };
 
 /**
@@ -234,6 +235,7 @@ export const useNotebookEditors = ({ editorRefs, runtimeScopeVariables }: Option
           event.stopPropagation();
           void formatCell(mountedCellId).finally(() => commands.saveNotebook(true));
         } else if (event.keyCode === monaco.KeyCode.Escape) {
+          if (isSuggestWidgetVisible()) return;
           event.preventDefault();
           event.stopPropagation();
           commands.stopAll();

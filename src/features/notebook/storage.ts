@@ -16,32 +16,32 @@ const DEFAULT_CODE = `// traQit へようこそ！
 //
 // 使えるもの:
 // - api: api.getMe() のように traQ API を呼び出すオブジェクト
+
+console.log("ログインユーザー", await api.getMe())
+
 // - util: util.pageAll(), util.sleep(), util.now() などの補助関数
+
+console.log("現在時刻", util.now())
+
 // - me / users / channels / groups: ログイン時に読み込まれた参照データ
-//
+
+console.log("読み込み済みデータ", {
+  me,
+  users,
+  channels,
+  groups,
+})
+
 // 初期状態は読み取り専用 API モードです。POST/PATCH/DELETE などは
 // dry-run として記録されるため、実際に更新したいときだけ盾アイコンで切り替えてください。
 
-const currentUser = await api.getMe()
-
-const activeChannels = channels
-  .filter((channel) => !channel.archived)
-  .slice(0, 5)
-  .map((channel) => channel.fullPath)
-
-console.log("ログインユーザー", currentUser)
-console.log("読み込み済みデータ", {
-  users: users.length,
-  channels: channels.length,
-  groups: groups.length,
-})
-
-({
-  message: "Welcome to traQ API Playground!",
-  user: currentUser.displayName || currentUser.name,
-  now: util.now(),
-  activeChannels,
-})`;
+if (me.homeChannel !== null) {
+  await api.setChannelSubscribeLevel({
+    path: { channelId: me.homeChannel },
+    body: { level: 2 },
+  })
+}
+`;
 
 const parseNotebookSnapshot = (raw: string): NotebookSnapshot | null => {
   try {

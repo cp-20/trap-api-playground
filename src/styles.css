@@ -108,3 +108,18 @@ button:disabled {
 .is-resizing-panel-horizontal * {
   cursor: row-resize;
 }
+
+.monacoOverflowWidgetHost {
+  position: fixed !important;
+  inset: 0;
+  z-index: 1000;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: visible !important;
+  pointer-events: none;
+}
+
+.monacoOverflowWidgetHost .overflowingContentWidgets {
+  z-index: 1000;
+  pointer-events: auto;
+}
