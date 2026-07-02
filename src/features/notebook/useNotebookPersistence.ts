@@ -1,52 +1,47 @@
-import { useEffect, useRef, type MutableRefObject } from "react";
+import { useAtomValue } from "jotai";
+import { useEffect, useRef } from "react";
 import type { ToastMessage } from "../../components/toast/ToastViewport";
-import type { ConsoleLog, MutationLog, NetworkLog } from "../../runtime/types";
 import {
   notebookSnapshotStorage,
   runtimeSnapshotFromState,
   saveRuntimeSnapshot,
   snapshotFromState,
 } from "./storage";
-import type { NotebookCell } from "./types";
+import {
+  cellsAtom,
+  consoleLogsAtom,
+  mutationLogsAtom,
+  networkLogsAtom,
+  networkOpenAtom,
+  selectedCellIdAtom,
+} from "./state";
 
 type Options = {
-  cells: NotebookCell[];
-  cellsRef: MutableRefObject<NotebookCell[]>;
-  selectedCellId: string;
-  selectedCellIdRef: MutableRefObject<string>;
-  networkOpen: boolean;
-  consoleLogs: ConsoleLog[];
-  networkLogs: NetworkLog[];
-  mutationLogs: MutationLog[];
   pushToast: (message: string, tone?: ToastMessage["tone"]) => void;
 };
 
-export const useNotebookPersistence = ({
-  cells,
-  cellsRef,
-  selectedCellId,
-  selectedCellIdRef,
-  networkOpen,
-  consoleLogs,
-  networkLogs,
-  mutationLogs,
-  pushToast,
-}: Options) => {
+export const useNotebookPersistence = ({ pushToast }: Options) => {
+  const cells = useAtomValue(cellsAtom);
+  const selectedCellId = useAtomValue(selectedCellIdAtom);
+  const networkOpen = useAtomValue(networkOpenAtom);
+  const consoleLogs = useAtomValue(consoleLogsAtom);
+  const networkLogs = useAtomValue(networkLogsAtom);
+  const mutationLogs = useAtomValue(mutationLogsAtom);
   const runtimeStorageWarningShownRef = useRef(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      const snapshot = snapshotFromState(cellsRef.current, selectedCellIdRef.current, networkOpen);
+      const snapshot = snapshotFromState(cells, selectedCellId, networkOpen);
       notebookSnapshotStorage.write(snapshot);
     }, 600);
     return () => window.clearTimeout(timer);
-  }, [cells, cellsRef, networkOpen, selectedCellId, selectedCellIdRef]);
+  }, [cells, networkOpen, selectedCellId]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       try {
         saveRuntimeSnapshot(
-          runtimeSnapshotFromState(cellsRef.current, consoleLogs, networkLogs, mutationLogs),
+          runtimeSnapshotFromState(cells, consoleLogs, networkLogs, mutationLogs),
         );
       } catch (error) {
         if (runtimeStorageWarningShownRef.current) return;
@@ -60,5 +55,5 @@ export const useNotebookPersistence = ({
       }
     }, 600);
     return () => window.clearTimeout(timer);
-  }, [cells, cellsRef, consoleLogs, mutationLogs, networkLogs, pushToast]);
+  }, [cells, consoleLogs, mutationLogs, networkLogs, pushToast]);
 };

@@ -1,8 +1,14 @@
 /// <reference lib="webworker" />
 
 import { type ApiCallInput, buildRequest, type BuiltRequest, callTraqApi } from "../data/request";
-import type { OperationMeta } from "../data/types";
-import type { ConsoleLog, MutationLog, NetworkLog, RuntimeErrorPayload } from "./types";
+import type { OperationMeta } from "../features/operations/types";
+import type {
+  ConsoleLog,
+  MutationLog,
+  NetworkLog,
+  RuntimeErrorPayload,
+  RuntimeScopeVariable,
+} from "./types";
 import type { WorkerInboundMessage, WorkerOutboundMessage, WorkerRunMessage } from "./messages";
 
 const ctx = {
@@ -12,6 +18,22 @@ const ctx = {
 
 const rateState = new Map<string, number>();
 const REQUEST_TIMEOUT_MS = 30_000;
+const MAX_RUNTIME_VARIABLES = 80;
+const MAX_TYPE_DEPTH = 3;
+const MAX_ARRAY_SAMPLE = 8;
+const MAX_OBJECT_PROPERTIES = 24;
+const MAX_TYPE_LENGTH = 900;
+const BUILTIN_SCOPE_NAMES = new Set([
+  "api",
+  "util",
+  "ctx",
+  "console",
+  "me",
+  "users",
+  "channels",
+  "groups",
+]);
+const IDENTIFIER_PATTERN = /^[A-Za-z_$][A-Za-z0-9_$]*$/u;
 
 const post = (message: WorkerOutboundMessage): void => {
   self.postMessage(message);
@@ -45,6 +67,125 @@ const serializeError = (error: unknown): RuntimeErrorPayload => {
     name: "Error",
     message: String(error),
   };
+};
+
+const isValidIdentifier = (name: string): boolean => IDENTIFIER_PATTERN.test(name);
+
+const typeForConstructorName = (name: string): string | null => {
+  if (
+    [
+      "ArrayBuffer",
+      "Blob",
+      "Date",
+      "Error",
+      "File",
+      "FormData",
+      "Headers",
+      "ReadableStream",
+      "RegExp",
+      "Request",
+      "Response",
+      "URL",
+      "URLSearchParams",
+    ].includes(name)
+  ) {
+    return name;
+  }
+  return null;
+};
+
+const unionTypes = (types: string[]): string => {
+  const unique = [...new Set(types)];
+  if (unique.length === 0) return "unknown";
+  if (unique.includes("unknown")) return "unknown";
+  if (unique.length > 5) return "unknown";
+  return unique.join(" | ");
+};
+
+const quoteObjectKey = (key: string): string => {
+  return isValidIdentifier(key) ? key : JSON.stringify(key);
+};
+
+const limitTypeLength = (typeName: string): string => {
+  return typeName.length > MAX_TYPE_LENGTH ? "unknown" : typeName;
+};
+
+const inferRuntimeType = (value: unknown, depth = 0, seen = new WeakSet<object>()): string => {
+  if (value === null) return "null";
+
+  switch (typeof value) {
+    case "undefined":
+      return "undefined";
+    case "string":
+      return "string";
+    case "number":
+      return "number";
+    case "boolean":
+      return "boolean";
+    case "bigint":
+      return "bigint";
+    case "symbol":
+      return "symbol";
+    case "function":
+      return "(...args: unknown[]) => unknown";
+    case "object":
+      break;
+  }
+
+  if (depth >= MAX_TYPE_DEPTH) return "unknown";
+  if (seen.has(value)) return "unknown";
+  seen.add(value);
+
+  if (Array.isArray(value)) {
+    const itemType = unionTypes(
+      value.slice(0, MAX_ARRAY_SAMPLE).map((item) => inferRuntimeType(item, depth + 1, seen)),
+    );
+    return limitTypeLength(`${itemType.includes(" | ") ? `(${itemType})` : itemType}[]`);
+  }
+
+  if (value instanceof Map) {
+    const entries = [...value.entries()].slice(0, MAX_ARRAY_SAMPLE);
+    return limitTypeLength(
+      `Map<${unionTypes(entries.map(([key]) => inferRuntimeType(key, depth + 1, seen)))}, ${unionTypes(entries.map(([, item]) => inferRuntimeType(item, depth + 1, seen)))}>`,
+    );
+  }
+
+  if (value instanceof Set) {
+    const items = [...value.values()].slice(0, MAX_ARRAY_SAMPLE);
+    return limitTypeLength(
+      `Set<${unionTypes(items.map((item) => inferRuntimeType(item, depth + 1, seen)))}>`,
+    );
+  }
+
+  const constructorName = Object.prototype.toString.call(value).slice("[object ".length, -1);
+  const builtInType = typeForConstructorName(constructorName);
+  if (builtInType) return builtInType;
+
+  const entries = Object.entries(value as Record<string, unknown>).slice(0, MAX_OBJECT_PROPERTIES);
+  if (entries.length === 0) return "Record<string, unknown>";
+
+  return limitTypeLength(
+    `{\n${entries
+      .map(([key, item]) => `  ${quoteObjectKey(key)}: ${inferRuntimeType(item, depth + 1, seen)};`)
+      .join("\n")}\n}`,
+  );
+};
+
+const snapshotRuntimeScope = (): RuntimeScopeVariable[] => {
+  return Object.entries(ctx.scope)
+    .filter(([name]) => {
+      if (!isValidIdentifier(name) || BUILTIN_SCOPE_NAMES.has(name)) return false;
+      return !(name in globalThis);
+    })
+    .slice(0, MAX_RUNTIME_VARIABLES)
+    .map(([name, value]) => ({
+      name,
+      typeName: inferRuntimeType(value),
+    }));
+};
+
+const postRuntimeScope = (): void => {
+  post({ type: "runtime-scope", variables: snapshotRuntimeScope() });
 };
 
 const sleep = (ms: number): Promise<void> => {
@@ -574,6 +715,8 @@ const runCell = async (message: WorkerRunMessage): Promise<void> => {
       cellId: message.cellId,
       error: serializeError(error),
     });
+  } finally {
+    postRuntimeScope();
   }
 };
 
@@ -582,6 +725,7 @@ self.addEventListener("message", (event: MessageEvent<WorkerInboundMessage>) => 
     ctx.state = {};
     ctx.scope = Object.create(null) as Record<string, unknown>;
     rateState.clear();
+    postRuntimeScope();
     return;
   }
   void runCell(event.data);

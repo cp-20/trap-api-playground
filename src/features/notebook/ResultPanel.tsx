@@ -9,13 +9,13 @@ type Props = {
 
 export const ResultPanel = ({ result }: Props) => {
   if (result.status === "idle") {
-    return <div className={styles.emptyState}>No result yet.</div>;
+    return <div className={styles.emptyState}>まだ結果はありません。</div>;
   }
   if (result.status === "running") {
     return (
       <div className={styles.resultState}>
         <LoaderCircle className={styles.spin} size={18} />
-        Running cell...
+        セルを実行中...
       </div>
     );
   }
@@ -26,7 +26,7 @@ export const ResultPanel = ({ result }: Props) => {
           <CircleAlert size={18} />
           {result.error.name}: {result.error.message}
         </div>
-        {result.error.status ? <p>HTTP status: {result.error.status}</p> : null}
+        {result.error.status ? <p>HTTP ステータス: {result.error.status}</p> : null}
         {result.error.body !== undefined ? <JsonView value={result.error.body} /> : null}
         {result.error.stack ? <pre>{result.error.stack}</pre> : null}
       </div>

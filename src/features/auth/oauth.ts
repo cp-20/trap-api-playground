@@ -73,9 +73,6 @@ export const parseOAuthCallback = (search: string): OAuthCallbackResult => {
 
 export const beginLogin = async (scope: string): Promise<void> => {
   const clientId = getClientId();
-  if (!clientId) {
-    throw new Error("VITE_TRAQ_CLIENT_ID is required to start OAuth login.");
-  }
 
   const { verifier, challenge } = await createPkcePair();
   const state = randomBase64Url(24);

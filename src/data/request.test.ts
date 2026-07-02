@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildRequest } from "./request";
-import type { OperationMeta } from "./types";
+import type { OperationMeta } from "../features/operations/types";
 
 const operation: OperationMeta = {
   operationId: "postMessage",

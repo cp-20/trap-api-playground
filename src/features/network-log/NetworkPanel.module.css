@@ -8,8 +8,23 @@
 
 .panelResizer:hover,
 .panelResizer:focus-visible {
-  background: rgba(83, 155, 245, 0.16);
   outline: none;
+}
+
+.panelResizer:hover,
+.panelResizer:focus-visible,
+.panelResizer[data-resizing="true"] {
+  background: rgba(83, 155, 245, 0.1);
+}
+
+.panelResizer::before {
+  content: "";
+  position: absolute;
+  background: var(--border);
+  transition:
+    background 120ms ease,
+    height 120ms ease,
+    width 120ms ease;
 }
 
 .networkPanel {
@@ -24,13 +39,30 @@
 
 .networkPanelOpen {
   display: grid;
-  grid-template-rows: 6px auto minmax(0, 1fr);
+  grid-template-rows: 1px auto minmax(0, 1fr);
+  border-top: 0;
   height: var(--logs-panel-height, 260px);
 }
 
 .panelResizerLogs {
+  height: 10px;
+  align-self: center;
   cursor: row-resize;
-  border-top: 1px solid var(--border);
+}
+
+.panelResizerLogs::before {
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.panelResizerLogs:hover::before,
+.panelResizerLogs:focus-visible::before,
+.panelResizerLogs[data-resizing="true"]::before {
+  height: 3px;
+  background: var(--accent);
 }
 
 .networkPanelHead {
@@ -39,6 +71,10 @@
   align-items: stretch;
   border-top: 1px solid var(--border);
   background: var(--toolbar);
+}
+
+.networkPanelOpen .networkPanelHead {
+  border-top: 0;
 }
 
 .networkPanelToggle {

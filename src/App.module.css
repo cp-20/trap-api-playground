@@ -16,7 +16,7 @@
 .workspace {
   display: grid;
   grid-template-columns:
-    minmax(380px, 1fr) 6px
+    minmax(380px, 1fr) 1px
     minmax(260px, var(--globals-panel-width, 360px));
   min-height: 0;
   overflow: hidden;
@@ -32,17 +32,48 @@
 }
 
 .workspaceResizer {
+  width: 10px;
+  justify-self: center;
   cursor: col-resize;
-  border-left: 1px solid var(--border);
-  border-right: 1px solid transparent;
 }
 
 .workspaceResizer:hover,
 .workspaceResizer:focus-visible,
 .panelResizer:hover,
 .panelResizer:focus-visible {
-  background: rgba(83, 155, 245, 0.16);
   outline: none;
+}
+
+.workspaceResizer:hover,
+.workspaceResizer:focus-visible,
+.workspaceResizer[data-resizing="true"] {
+  background: rgba(83, 155, 245, 0.1);
+}
+
+.workspaceResizer::before,
+.panelResizer::before {
+  content: "";
+  position: absolute;
+  background: var(--border);
+  transition:
+    background 120ms ease,
+    height 120ms ease,
+    width 120ms ease;
+}
+
+.workspaceResizer::before {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+.workspaceResizer:hover::before,
+.workspaceResizer:focus-visible::before,
+.workspaceResizer[data-resizing="true"]::before {
+  width: 3px;
+  background: var(--accent);
 }
 
 .notebookPane {

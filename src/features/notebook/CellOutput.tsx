@@ -20,11 +20,13 @@ export const CellOutput = ({ cell, consoleLogs }: Props) => {
   return (
     <div className={styles.cellOutput}>
       <section className={styles.inlinePanel}>
-        <h3>Result</h3>
+        <h3>結果</h3>
         {showConsole ? (
           <div className={`${styles.inlineLog} ${styles.inlineLogResult}`}>
             {omittedLogs ? (
-              <div className={styles.outputOmitted}>{omittedLogs} older console entries hidden</div>
+              <div className={styles.outputOmitted}>
+                古い console 出力 {omittedLogs} 件を省略しています
+              </div>
             ) : null}
             {visibleLogs.map((log) => (
               <div
@@ -36,7 +38,7 @@ export const CellOutput = ({ cell, consoleLogs }: Props) => {
                 key={log.id}
               >
                 {log.kind === "runtime-warning" ? (
-                  <span className={styles.consoleWarningLabel}>Read-only mode</span>
+                  <span className={styles.consoleWarningLabel}>読み取り専用モード</span>
                 ) : null}
                 {log.values.map((value, index) => (
                   <div className={styles.consoleValue} key={index}>

@@ -11,7 +11,7 @@ const CopyStringButton = ({ value }: { value: string }) => (
   <button
     className={styles["json-copy"]}
     type="button"
-    title="Copy string"
+    title="文字列をコピー"
     onClick={() => void navigator.clipboard?.writeText(value)}
   >
     <Copy size={12} />

@@ -1,5 +1,11 @@
-import type { ConsoleLog, MutationLog, NetworkLog, RuntimeErrorPayload } from "./types";
-import type { OperationMeta } from "../data/types";
+import type {
+  ConsoleLog,
+  MutationLog,
+  NetworkLog,
+  RuntimeErrorPayload,
+  RuntimeScopeVariable,
+} from "./types";
+import type { OperationMeta } from "../features/operations/types";
 import type { RuntimeGlobals } from "../features/entities/types";
 
 export type WorkerRunMessage = {
@@ -25,6 +31,7 @@ export type WorkerOutboundMessage =
   | { type: "warning"; cellId: string; message: string }
   | { type: "network"; log: NetworkLog }
   | { type: "mutation"; log: MutationLog }
+  | { type: "runtime-scope"; variables: RuntimeScopeVariable[] }
   | { type: "success"; runId: string; cellId: string; value: unknown }
   | {
       type: "error";

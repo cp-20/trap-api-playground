@@ -1,5 +1,5 @@
 import { deflateRaw, inflateRaw } from "pako";
-import type { NotebookSnapshot } from "./features/notebook/types";
+import type { NotebookSnapshot } from "../notebook/types";
 
 const SHARE_PREFIX = "share=";
 

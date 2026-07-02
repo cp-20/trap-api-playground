@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import openapiTS, { astToString } from "openapi-typescript";
 import { parse } from "yaml";
 import { OPENAPI_URL } from "../src/config";
-import { extractOperations } from "../src/data/openapi";
+import { extractOperations } from "../src/features/operations/catalog";
 
 type SchemaObject = Record<string, unknown>;
 type OpenApiDocument = {
@@ -267,7 +267,16 @@ const buildApiDeclaration = (document: OpenApiDocument): string => {
 };
 
 const asTsStringModule = (value: string): string => {
-  return `export const traqApiTypes = ${JSON.stringify(value)};\n`;
+  return `export const traqApiTypes = ${JSON.stringify(minifyDeclaration(value))};\n`;
+};
+
+const minifyDeclaration = (source: string): string => {
+  return source
+    .replace(/\/\*\*[\s\S]*?\*\//g, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s*([{}()[\];:,.<>=|&?])\s*/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
 };
 
 const response = await fetch(OPENAPI_URL);

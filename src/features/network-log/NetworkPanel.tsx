@@ -1,23 +1,20 @@
 import { ChevronDown, ChevronUp, History, ListTree, RotateCcw } from "lucide-react";
+import { useAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import {
   useMemo,
   useState,
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import type { NotebookCell } from "../notebook/types";
-import type { MutationLog, NetworkLog } from "../../runtime/types";
+import type { MutationLog } from "../../runtime/types";
 import { JsonView } from "../../components/json-view/JsonView";
+import { cellsAtom, mutationLogsAtom, networkLogsAtom, networkOpenAtom } from "../notebook/state";
 import styles from "./NetworkPanel.module.css";
 
 type LogTab = "network" | "edit";
 
 type Props = {
-  cells: NotebookCell[];
-  networkLogs: NetworkLog[];
-  mutationLogs: MutationLog[];
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   onRevert: (log: MutationLog) => void;
   /** Inline size constraints from the resizable layout hook. */
   panelStyle?: CSSProperties;
@@ -34,14 +31,14 @@ const RevertState = ({
 }) => {
   if (log.revert.status === "available") {
     return (
-      <button type="button" onClick={() => onRevert(log)} title="Revert this edit">
+      <button type="button" onClick={() => onRevert(log)} title="この編集を戻す">
         <RotateCcw size={14} />
-        Revert
+        戻す
       </button>
     );
   }
   if (log.revert.status === "reverted") {
-    return <span className={`${styles.editState} ${styles.editStateOk}`}>reverted</span>;
+    return <span className={`${styles.editState} ${styles.editStateOk}`}>戻しました</span>;
   }
   if (log.revert.status === "failed") {
     return (
@@ -51,16 +48,11 @@ const RevertState = ({
   return <span className={styles.editState}>{log.revert.reason}</span>;
 };
 
-export const NetworkPanel = ({
-  cells,
-  networkLogs,
-  mutationLogs,
-  open,
-  onOpenChange,
-  onRevert,
-  panelStyle,
-  onResizeStart,
-}: Props) => {
+export const NetworkPanel = ({ onRevert, panelStyle, onResizeStart }: Props) => {
+  const cells = useAtomValue(cellsAtom);
+  const networkLogs = useAtomValue(networkLogsAtom);
+  const mutationLogs = useAtomValue(mutationLogsAtom);
+  const [open, setOpen] = useAtom(networkOpenAtom);
   const [tab, setTab] = useState<LogTab>("network");
   const cellsById = useMemo(() => new Map(cells.map((cell) => [cell.id, cell])), [cells]);
   const formatDuration = (durationMs?: number) =>
@@ -75,7 +67,7 @@ export const NetworkPanel = ({
         <div
           className={`${styles.panelResizer} ${styles.panelResizerLogs}`}
           role="separator"
-          aria-label="Resize logs panel"
+          aria-label="ログパネルの高さを変更"
           aria-orientation="horizontal"
           onPointerDown={onResizeStart}
         />
@@ -84,23 +76,23 @@ export const NetworkPanel = ({
         <button
           className={styles.networkPanelToggle}
           type="button"
-          onClick={() => onOpenChange(!open)}
-          title={open ? "Hide logs" : "Show logs"}
+          onClick={() => setOpen(!open)}
+          title={open ? "ログを閉じる" : "ログを開く"}
         >
           {open ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-          Logs
+          ログ
         </button>
-        <div className={styles.networkTabs} role="tablist" aria-label="Logs">
+        <div className={styles.networkTabs} role="tablist" aria-label="ログ">
           <button
             type="button"
             className={tab === "network" ? styles.activeTab : ""}
             onClick={() => {
               setTab("network");
-              onOpenChange(true);
+              setOpen(true);
             }}
           >
             <ListTree size={15} />
-            Network
+            通信
             <span>{networkLogs.length}</span>
           </button>
           <button
@@ -108,11 +100,11 @@ export const NetworkPanel = ({
             className={tab === "edit" ? styles.activeTab : ""}
             onClick={() => {
               setTab("edit");
-              onOpenChange(true);
+              setOpen(true);
             }}
           >
             <History size={15} />
-            Edit Log
+            編集ログ
             <span>{mutationLogs.length}</span>
           </button>
         </div>
@@ -134,7 +126,7 @@ export const NetworkPanel = ({
                 </div>
               ))
             ) : (
-              <div className={styles.emptyState}>No network calls.</div>
+              <div className={styles.emptyState}>通信ログはありません。</div>
             )
           ) : null}
 
@@ -147,7 +139,7 @@ export const NetworkPanel = ({
                       <span>
                         {log.method} {log.operationId}
                       </span>
-                      <span>{cellsById.get(log.cellId)?.title ?? "Cell"}</span>
+                      <span>{cellsById.get(log.cellId)?.title ?? "セル"}</span>
                       <span>{log.status}</span>
                       <RevertState log={log} onRevert={onRevert} />
                     </summary>
@@ -158,14 +150,14 @@ export const NetworkPanel = ({
                           <dd>{log.url}</dd>
                         </div>
                         <div>
-                          <dt>Request</dt>
+                          <dt>リクエスト</dt>
                           <dd>
                             <JsonView value={log.request} />
                           </dd>
                         </div>
                         {log.before !== undefined ? (
                           <div>
-                            <dt>Before</dt>
+                            <dt>変更前</dt>
                             <dd>
                               <JsonView value={log.before} />
                             </dd>
@@ -173,7 +165,7 @@ export const NetworkPanel = ({
                         ) : null}
                         {log.response !== undefined ? (
                           <div>
-                            <dt>Response</dt>
+                            <dt>レスポンス</dt>
                             <dd>
                               <JsonView value={log.response} />
                             </dd>
@@ -185,7 +177,7 @@ export const NetworkPanel = ({
                 ))}
               </div>
             ) : (
-              <div className={styles.emptyState}>No edits recorded.</div>
+              <div className={styles.emptyState}>編集ログはありません。</div>
             )
           ) : null}
         </div>

@@ -1,7 +1,7 @@
 import { useEffect, type Dispatch, type SetStateAction } from "react";
-import { loadEntityIndexes } from "../../data/entityIndexes";
-import { loadOperations } from "../../data/openapi";
-import type { OperationMeta } from "../../data/types";
+import { loadEntityIndexes } from "../entities/indexes";
+import { loadOperations } from "../operations/catalog";
+import type { OperationMeta } from "../operations/types";
 import type { ToastMessage } from "../../components/toast/ToastViewport";
 import type { OAuthToken } from "../auth/oauth";
 import type { EntityIndexes } from "../entities/types";

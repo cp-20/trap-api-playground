@@ -39,13 +39,9 @@ body,
   overflow: hidden;
 }
 
-* {
-  scrollbar-color: rgba(205, 217, 229, 0.32) transparent;
-}
-
 *::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 16px;
+  height: 16px;
   background: transparent;
 }
 
@@ -55,7 +51,7 @@ body,
 
 *::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
-  border-radius: 2px;
+  border-radius: 0;
   background: rgba(205, 217, 229, 0.24);
   background-clip: padding-box;
 }
@@ -100,6 +96,15 @@ button:disabled {
 }
 
 .is-resizing-panel {
-  cursor: col-resize;
   user-select: none;
+}
+
+.is-resizing-panel-vertical,
+.is-resizing-panel-vertical * {
+  cursor: col-resize;
+}
+
+.is-resizing-panel-horizontal,
+.is-resizing-panel-horizontal * {
+  cursor: row-resize;
 }

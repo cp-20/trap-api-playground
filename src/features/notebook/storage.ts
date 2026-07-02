@@ -65,7 +65,7 @@ export const runtimeSnapshotStorage = createLocalStorageValue<RuntimeLogSnapshot
 export const createCell = (code = DEFAULT_CODE, title?: string): NotebookCell => {
   return {
     id: createId("cell"),
-    title: title ?? "Cell",
+    title: title ?? "セル",
     code,
     readOnly: true,
     result: { status: "idle" },

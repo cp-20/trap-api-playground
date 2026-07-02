@@ -21,7 +21,7 @@ export const useOAuthCallback = ({ setToken, pushToast }: Options) => {
     void exchangeCode(callback.code, callback.state)
       .then((nextToken) => {
         setToken(nextToken);
-        pushToast("Login complete.", "success");
+        pushToast("ログインしました。", "success");
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : String(error), "error"))
       .finally(() => {

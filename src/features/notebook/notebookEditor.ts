@@ -1,28 +1,23 @@
 import type { Monaco } from "@monaco-editor/react";
+import { useSetAtom, useStore } from "jotai";
 import type { editor as MonacoEditor } from "monaco-editor";
-import { useCallback, useRef, type ComponentProps, type MutableRefObject } from "react";
+import { useCallback, useEffect, useRef, type ComponentProps, type MutableRefObject } from "react";
 import Editor from "@monaco-editor/react";
-import { formatJavaScript } from "../../format";
-import type { NotebookCell } from "./types";
+import { formatJavaScript } from "../formatter/format";
+import type { RuntimeScopeVariable } from "../../runtime/types";
+import {
+  addCellAfterAtom,
+  cellsAtom,
+  notebookCommandsAtom,
+  selectCellAtom,
+  updateCellAtom,
+} from "./state";
 
 export type MountedEditor = Parameters<NonNullable<ComponentProps<typeof Editor>["onMount"]>>[0];
 
-type CommandRefs = {
-  canRunRef: MutableRefObject<() => boolean>;
-  runCellRef: MutableRefObject<(cellId: string) => void | Promise<void>>;
-  runAllCellsRef: MutableRefObject<() => void | Promise<void>>;
-  addCellAfterRef: MutableRefObject<(cellId: string) => void>;
-  saveNotebookRef: MutableRefObject<(showToast?: boolean) => void>;
-  stopAllRef: MutableRefObject<() => void>;
-  toggleNetworkRef: MutableRefObject<() => void>;
-};
-
 type Options = {
-  cellsRef: MutableRefObject<NotebookCell[]>;
   editorRefs: MutableRefObject<Map<string, MountedEditor>>;
-  commands: CommandRefs;
-  onSelectCell: (cellId: string) => void;
-  onUpdateCell: (cellId: string, patch: Partial<NotebookCell>) => void;
+  runtimeScopeVariables: RuntimeScopeVariable[];
 };
 
 let apiTypesRegistration: Promise<void> | null = null;
@@ -37,6 +32,8 @@ declare const users: Traq.User[];
 declare const channels: TraqChannelWithFullPath[];
 declare const groups: Traq.UserGroup[];
 `;
+const RUNTIME_SCOPE_TYPES_PATH = "file:///traq-api-playground-runtime-scope.d.ts";
+const IDENTIFIER_PATTERN = /^[A-Za-z_$][A-Za-z0-9_$]*$/u;
 
 const ensureApiTypes = (monaco: Monaco): void => {
   if (apiTypesRegistered) return;
@@ -102,18 +99,48 @@ const cellIdFromEditor = (editor: MountedEditor, fallback: string): string => {
   return fileName?.endsWith(".ts") ? fileName.slice(0, -3) : fallback;
 };
 
-export const useNotebookEditors = ({
-  cellsRef,
-  editorRefs,
-  commands,
-  onSelectCell,
-  onUpdateCell,
-}: Options) => {
+const runtimeScopeTypes = (variables: RuntimeScopeVariable[]): string => {
+  if (variables.length === 0) return "";
+  return variables
+    .filter(({ name }) => IDENTIFIER_PATTERN.test(name))
+    .map(({ name, typeName }) => `declare const ${name}: ${typeName};`)
+    .join("\n");
+};
+
+export const useNotebookEditors = ({ editorRefs, runtimeScopeVariables }: Options) => {
+  const store = useStore();
   const monacoRef = useRef<Monaco | null>(null);
+  const runtimeScopeVariablesRef = useRef(runtimeScopeVariables);
+  const runtimeScopeTypesDisposableRef = useRef<{ dispose(): void } | null>(null);
+  const addCellAfter = useSetAtom(addCellAfterAtom);
+  const selectCell = useSetAtom(selectCellAtom);
+  const updateCell = useSetAtom(updateCellAtom);
+
+  const updateRuntimeScopeTypes = useCallback((variables: RuntimeScopeVariable[]) => {
+    const monaco = monacoRef.current;
+    if (!monaco) return;
+
+    runtimeScopeTypesDisposableRef.current?.dispose();
+    runtimeScopeTypesDisposableRef.current = null;
+
+    const declarations = runtimeScopeTypes(variables);
+    if (!declarations) return;
+
+    runtimeScopeTypesDisposableRef.current =
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(
+        declarations,
+        RUNTIME_SCOPE_TYPES_PATH,
+      );
+  }, []);
 
   const beforeMount = useCallback((monaco: Monaco) => {
     configureMonaco(monaco);
   }, []);
+
+  useEffect(() => {
+    runtimeScopeVariablesRef.current = runtimeScopeVariables;
+    updateRuntimeScopeTypes(runtimeScopeVariables);
+  }, [runtimeScopeVariables, updateRuntimeScopeTypes]);
 
   const prepareCodeForRun = useCallback(
     async (cellId: string, source: string): Promise<string> => {
@@ -137,25 +164,26 @@ export const useNotebookEditors = ({
     async (cellId: string) => {
       const editor = editorRefs.current.get(cellId);
       const current =
-        editor?.getValue() ?? cellsRef.current.find((cell) => cell.id === cellId)?.code;
+        editor?.getValue() ?? store.get(cellsAtom).find((cell) => cell.id === cellId)?.code;
       if (current === undefined) return;
       const formatted = await formatJavaScript(current);
       editor?.setValue(formatted);
-      onUpdateCell(cellId, { code: formatted });
+      updateCell({ cellId, patch: { code: formatted } });
     },
-    [cellsRef, editorRefs, onUpdateCell],
+    [editorRefs, store, updateCell],
   );
 
   const formatAllEditors = useCallback(async () => {
-    await Promise.all(cellsRef.current.map((cell) => formatCell(cell.id)));
-  }, [cellsRef, formatCell]);
+    await Promise.all(store.get(cellsAtom).map((cell) => formatCell(cell.id)));
+  }, [formatCell, store]);
 
   const onEditorMount = useCallback(
     (cellId: string) => (editor: MountedEditor, monaco: Monaco) => {
       monacoRef.current = monaco;
       ensureApiTypes(monaco);
+      updateRuntimeScopeTypes(runtimeScopeVariablesRef.current);
       editorRefs.current.set(cellId, editor);
-      editor.onDidFocusEditorWidget(() => onSelectCell(cellIdFromEditor(editor, cellId)));
+      editor.onDidFocusEditorWidget(() => selectCell(cellIdFromEditor(editor, cellId)));
 
       if (!formatProviderRegistered) {
         monaco.languages.registerDocumentFormattingEditProvider("typescript", {
@@ -170,35 +198,36 @@ export const useNotebookEditors = ({
       editor.onKeyDown((event) => {
         const mountedCellId = cellIdFromEditor(editor, cellId);
         const primary = event.ctrlKey || event.metaKey;
+        const commands = store.get(notebookCommandsAtom);
         if (primary && event.shiftKey && event.keyCode === monaco.KeyCode.Enter) {
           event.preventDefault();
           event.stopPropagation();
-          if (commands.canRunRef.current()) void commands.runAllCellsRef.current();
+          if (commands.canRun()) void commands.runAllCells();
         } else if (primary && event.keyCode === monaco.KeyCode.Enter) {
           event.preventDefault();
           event.stopPropagation();
-          void commands.runCellRef.current(mountedCellId);
+          if (commands.canRun()) void commands.runCellById(mountedCellId);
         } else if (primary && event.keyCode === monaco.KeyCode.KeyB) {
           event.preventDefault();
           event.stopPropagation();
-          if (commands.canRunRef.current()) commands.addCellAfterRef.current(mountedCellId);
+          addCellAfter(mountedCellId);
         } else if (primary && event.keyCode === monaco.KeyCode.KeyK) {
           event.preventDefault();
           event.stopPropagation();
-          commands.toggleNetworkRef.current();
+          commands.toggleNetwork();
         } else if (primary && event.keyCode === monaco.KeyCode.KeyS) {
           event.preventDefault();
           event.stopPropagation();
-          void formatCell(mountedCellId).finally(() => commands.saveNotebookRef.current(true));
+          void formatCell(mountedCellId).finally(() => commands.saveNotebook(true));
         } else if (event.keyCode === monaco.KeyCode.Escape) {
           event.preventDefault();
           event.stopPropagation();
-          commands.stopAllRef.current();
+          commands.stopAll();
         }
       });
       editor.onDidDispose(() => editorRefs.current.delete(cellId));
     },
-    [commands, editorRefs, formatCell, monacoRef, onSelectCell],
+    [addCellAfter, editorRefs, formatCell, monacoRef, selectCell, store, updateRuntimeScopeTypes],
   );
 
   return {

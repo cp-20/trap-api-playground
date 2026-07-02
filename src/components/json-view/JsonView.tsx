@@ -27,6 +27,10 @@ export const JsonView = ({
   if (summary) return summary;
 
   if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return <span className={styles["json-kind"]}>Array(0)</span>;
+    }
+
     const shouldChunk = value.length > CHUNK_SIZE;
     const chunkCount = shouldChunk ? Math.ceil(value.length / CHUNK_SIZE) : 0;
 
@@ -39,9 +43,9 @@ export const JsonView = ({
         <summary>
           <span className={styles["json-kind"]}>Array({value.length})</span>
         </summary>
-        {open && (
-          shouldChunk
-            ? <ol className={styles["json-chunked-list"]}>
+        {open &&
+          (shouldChunk ? (
+            <ol className={styles["json-chunked-list"]}>
               {Array.from({ length: chunkCount }, (_, chunkIndex) => {
                 const start = chunkIndex * CHUNK_SIZE;
                 return (
@@ -59,25 +63,32 @@ export const JsonView = ({
                 );
               })}
             </ol>
-            : <ol>{value.map((item, index) => (
-              <li key={index}>
-                <JsonView
-                  value={item}
-                  depth={depth + 1}
-                  allowEntity={allowEntity}
-                  allowSummary={allowSummary}
-                  fieldKey={fieldKey}
-                  suppressedEntityId={suppressedEntityId}
-                />
-              </li>
-            ))}</ol>
-        )}
+          ) : (
+            <ol>
+              {value.map((item, index) => (
+                <li key={index}>
+                  <JsonView
+                    value={item}
+                    depth={depth + 1}
+                    allowEntity={allowEntity}
+                    allowSummary={allowSummary}
+                    fieldKey={fieldKey}
+                    suppressedEntityId={suppressedEntityId}
+                  />
+                </li>
+              ))}
+            </ol>
+          ))}
       </details>
     );
   }
 
   if (isRecord(value)) {
     const entries = Object.entries(value);
+    if (entries.length === 0) {
+      return <span className={styles["json-kind"]}>Object(0)</span>;
+    }
+
     return (
       <div className={cx(styles["json-node"], styles["json-node--object"])}>
         {depth > 0 ? <span className={styles["json-kind"]}>Object({entries.length})</span> : null}

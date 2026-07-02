@@ -1,4 +1,4 @@
-import type { HttpMethod } from "../data/types";
+import type { HttpMethod } from "../features/operations/types";
 
 export type ConsoleLog = {
   id: string;
@@ -63,4 +63,9 @@ export type RuntimeErrorPayload = {
   status?: number;
   requestId?: string | null;
   body?: unknown;
+};
+
+export type RuntimeScopeVariable = {
+  name: string;
+  typeName: string;
 };

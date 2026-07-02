@@ -1,31 +1,19 @@
-import { useAtom } from "jotai";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  type Dispatch,
-  type MutableRefObject,
-  type SetStateAction,
-} from "react";
+import { useAtom, useSetAtom, useStore } from "jotai";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getApiBase } from "../../config";
-import type { OAuthToken } from "../auth/oauth";
-import type { RuntimeGlobals } from "../entities/types";
 import { MAX_CONSOLE_LOGS, MAX_MUTATION_LOGS, MAX_NETWORK_LOGS } from "./storage";
-import type { OperationMeta } from "../../data/types";
-import type { ConsoleLog, MutationLog } from "../../runtime/types";
+import type { ConsoleLog, MutationLog, RuntimeScopeVariable } from "../../runtime/types";
 import type { NotebookCell } from "./types";
 import { createId } from "../../utils/ids";
 import type { WorkerInboundMessage, WorkerOutboundMessage } from "../../runtime/messages";
-import { consoleLogsAtom, mutationLogsAtom, networkLogsAtom } from "./state";
+import { tokenAtom } from "../auth/state";
+import { runtimeGlobalsAtom } from "../entities/state";
+import { operationsAtom } from "../operations/state";
+import { cellsAtom, consoleLogsAtom, mutationLogsAtom, networkLogsAtom } from "./state";
 
 const RUN_TIMEOUT_MS = 45_000;
 
 type Args = {
-  cellsRef: MutableRefObject<NotebookCell[]>;
-  operationsRef: MutableRefObject<OperationMeta[]>;
-  tokenRef: MutableRefObject<OAuthToken | null>;
-  globalsRef: MutableRefObject<RuntimeGlobals>;
-  setCells: Dispatch<SetStateAction<NotebookCell[]>>;
   pushToast: (message: string, tone?: "info" | "success" | "error") => void;
 };
 
@@ -50,17 +38,13 @@ const markRunningCellsAsError = (
   );
 };
 
-export const useRuntimeWorker = ({
-  cellsRef,
-  operationsRef,
-  tokenRef,
-  globalsRef,
-  setCells,
-  pushToast,
-}: Args) => {
+export const useRuntimeWorker = ({ pushToast }: Args) => {
+  const store = useStore();
+  const setCells = useSetAtom(cellsAtom);
   const [consoleLogs, setConsoleLogs] = useAtom(consoleLogsAtom);
   const [networkLogs, setNetworkLogs] = useAtom(networkLogsAtom);
   const [mutationLogs, setMutationLogs] = useAtom(mutationLogsAtom);
+  const [runtimeScopeVariables, setRuntimeScopeVariables] = useState<RuntimeScopeVariable[]>([]);
   const workerRef = useRef<Worker | null>(null);
   const runningIds = useRef(new Map<string, string>());
   const runTimers = useRef(new Map<string, number>());
@@ -138,6 +122,8 @@ export const useRuntimeWorker = ({
         });
       } else if (message.type === "mutation") {
         setMutationLogs((current) => [message.log, ...current].slice(0, MAX_MUTATION_LOGS));
+      } else if (message.type === "runtime-scope") {
+        setRuntimeScopeVariables(message.variables);
       } else if (message.type === "success") {
         if (runningIds.current.get(message.cellId) !== message.runId) return;
         runningIds.current.delete(message.cellId);
@@ -210,7 +196,7 @@ export const useRuntimeWorker = ({
         if (runningIds.current.get(cell.id) !== runId) return;
         runningIds.current.delete(cell.id);
         runTimers.current.delete(cell.id);
-        const result = cellsRef.current.find((item) => item.id === cell.id)?.result;
+        const result = store.get(cellsAtom).find((item) => item.id === cell.id)?.result;
         const startedAt = result?.status === "running" ? result.startedAt : undefined;
         const finishedAt = Date.now();
         setCellResult(cell.id, {
@@ -232,19 +218,19 @@ export const useRuntimeWorker = ({
         cellId: cell.id,
         code: cell.code,
         readOnly: cell.readOnly,
-        operations: operationsRef.current,
+        operations: store.get(operationsAtom),
         apiBase: getApiBase(),
-        accessToken: tokenRef.current?.accessToken ?? null,
-        globals: globalsRef.current,
+        accessToken: store.get(tokenAtom)?.accessToken ?? null,
+        globals: store.get(runtimeGlobalsAtom),
       };
       workerRef.current!.postMessage(message);
     },
-    [cellsRef, clearRunTimer, createWorker, globalsRef, operationsRef, setCellResult, tokenRef],
+    [clearRunTimer, createWorker, setCellResult, store],
   );
 
   const runAll = useCallback(async () => {
-    for (const cell of cellsRef.current) runCell(cell);
-  }, [cellsRef, runCell]);
+    for (const cell of store.get(cellsAtom)) runCell(cell);
+  }, [runCell, store]);
 
   const stopAll = useCallback(() => {
     createWorker();
@@ -272,12 +258,13 @@ export const useRuntimeWorker = ({
     setConsoleLogs([]);
     setNetworkLogs([]);
     setMutationLogs([]);
+    setRuntimeScopeVariables([]);
     setCells((current) => current.map((cell) => ({ ...cell, result: { status: "idle" } })));
   }, [clearRunTimer, setCells]);
 
   const revertMutation = useCallback(
     async (log: MutationLog) => {
-      const token = tokenRef.current;
+      const token = store.get(tokenAtom);
       if (!token?.accessToken || log.revert.status !== "available") return;
       try {
         const response = await fetch(log.revert.request.url, {
@@ -312,13 +299,14 @@ export const useRuntimeWorker = ({
         pushToast(reason, "error");
       }
     },
-    [pushToast, tokenRef],
+    [pushToast, store],
   );
 
   return {
     consoleLogs,
     networkLogs,
     mutationLogs,
+    runtimeScopeVariables,
     runCell,
     runAll,
     stopAll,

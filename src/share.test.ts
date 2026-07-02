@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decodeShare, encodeShare } from "./share";
+import { decodeShare, encodeShare } from "./features/share/codec";
 import type { NotebookSnapshot } from "./features/notebook/types";
 
 describe("share encoding", () => {

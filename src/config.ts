@@ -8,7 +8,11 @@ export const getApiBase = (): string => {
 };
 
 export const getClientId = (): string => {
-  return import.meta.env.VITE_TRAQ_CLIENT_ID ?? "";
+  const clientId = import.meta.env.VITE_TRAQ_CLIENT_ID;
+  if (!clientId) {
+    throw new Error("VITE_TRAQ_CLIENT_ID が設定されていません。");
+  }
+  return clientId;
 };
 
 export const getRedirectUri = (): string => {

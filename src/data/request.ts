@@ -1,19 +1,26 @@
 import createClient from "openapi-fetch";
 import type { paths } from "../generated/traq-openapi";
-import type { OperationMeta } from "./types";
+import type { HttpMethod, OperationMeta } from "../features/operations/types";
+
+export type ApiPathValue = string | number | boolean;
+export type ApiQueryValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | Array<string | number | boolean>;
+export type ApiFormValue = string | Blob;
 
 export type ApiCallInput = {
-  path?: Record<string, string | number | boolean>;
-  query?: Record<
-    string,
-    string | number | boolean | null | undefined | Array<string | number | boolean>
-  >;
+  path?: Record<string, ApiPathValue>;
+  query?: Record<string, ApiQueryValue>;
   body?: unknown;
-  form?: Record<string, string | Blob>;
+  form?: Record<string, ApiFormValue>;
 };
 
 export type BuiltRequest = {
-  method: string;
+  method: HttpMethod;
   url: string;
   headers: Record<string, string>;
   body?: BodyInit;
@@ -126,8 +133,9 @@ export const callTraqApi = async ({
   });
 
   const body = input.form ? createFormData(input.form) : input.body;
+  const method = operation.method.toLowerCase() as Lowercase<HttpMethod>;
   const result = await client.request(
-    operation.method.toLowerCase() as never,
+    method as never,
     operation.path as never,
     {
       params: {
@@ -144,7 +152,7 @@ export const callTraqApi = async ({
     const captured = capturedRequest as Request | undefined;
     if (!captured) return buildRequest(operation, apiBase, input);
     return {
-      method: captured.method,
+      method: operation.method,
       url: captured.url,
       headers: headersToRecord(captured.headers),
       body: buildRequest(operation, apiBase, input).body,

@@ -1,77 +1,53 @@
-import { useEffect, type MutableRefObject } from "react";
-import type { NotebookCell } from "./types";
+import { useSetAtom, useStore } from "jotai";
+import { useEffect } from "react";
+import {
+  activeCellIdAtom,
+  addCellAtom,
+  cellsAtom,
+  notebookCommandsAtom,
+  selectedCellIdAtom,
+} from "./state";
 
-type Options = {
-  cellsRef: MutableRefObject<NotebookCell[]>;
-  selectedCellIdRef: MutableRefObject<string>;
-  activeCellIdRef: MutableRefObject<string>;
-  canRunRef: MutableRefObject<() => boolean>;
-  runAllCells: () => void | Promise<void>;
-  runCellById: (cellId: string) => void | Promise<void>;
-  addCell: (index?: number) => void;
-  toggleNetwork: () => void;
-  saveNotebook: (showToast?: boolean) => void;
-  formatAllEditors: () => Promise<void>;
-  stopAll: () => void;
-};
+export const useGlobalShortcuts = () => {
+  const store = useStore();
+  const addCell = useSetAtom(addCellAtom);
 
-export const useGlobalShortcuts = ({
-  cellsRef,
-  selectedCellIdRef,
-  activeCellIdRef,
-  canRunRef,
-  runAllCells,
-  runCellById,
-  addCell,
-  toggleNetwork,
-  saveNotebook,
-  formatAllEditors,
-  stopAll,
-}: Options) => {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       const inEditor = target?.closest(".monaco-editor") || target?.tagName === "INPUT";
       const primary = event.metaKey || event.ctrlKey;
+      const commands = store.get(notebookCommandsAtom);
 
       if (inEditor) return;
 
       if (primary && event.shiftKey && event.key === "Enter") {
         event.preventDefault();
-        if (canRunRef.current()) void runAllCells();
+        if (commands.canRun()) void commands.runAllCells();
       } else if (primary && event.key === "Enter") {
         event.preventDefault();
+        const cells = store.get(cellsAtom);
+        const activeCellId = store.get(activeCellIdAtom);
+        const selectedCellId = store.get(selectedCellIdAtom);
         const cell =
-          cellsRef.current.find((item) => item.id === activeCellIdRef.current) ??
-          cellsRef.current.find((item) => item.id === selectedCellIdRef.current) ??
-          cellsRef.current[0];
-        if (cell && canRunRef.current()) void runCellById(cell.id);
+          cells.find((item) => item.id === activeCellId) ??
+          cells.find((item) => item.id === selectedCellId) ??
+          cells[0];
+        if (cell && commands.canRun()) void commands.runCellById(cell.id);
       } else if (primary && event.key.toLowerCase() === "b") {
         event.preventDefault();
-        if (canRunRef.current()) addCell(cellsRef.current.length);
+        if (commands.canRun()) addCell(store.get(cellsAtom).length);
       } else if (primary && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        toggleNetwork();
+        commands.toggleNetwork();
       } else if (primary && event.key.toLowerCase() === "s") {
         event.preventDefault();
-        void formatAllEditors().finally(() => saveNotebook(true));
+        void commands.formatAllEditors().finally(() => commands.saveNotebook(true));
       } else if (event.key === "Escape") {
-        stopAll();
+        commands.stopAll();
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [
-    activeCellIdRef,
-    addCell,
-    cellsRef,
-    formatAllEditors,
-    runAllCells,
-    runCellById,
-    saveNotebook,
-    selectedCellIdRef,
-    stopAll,
-    toggleNetwork,
-    canRunRef,
-  ]);
+  }, [addCell, store]);
 };
