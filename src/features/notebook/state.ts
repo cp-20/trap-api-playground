@@ -77,10 +77,7 @@ export const addCellAtom = atom<null, [number?], string>(
   null,
   (get, set, index = get(cellsAtom).length) => {
     const cells = get(cellsAtom);
-    const cell = createCell(
-      "// TypeScript を書いてください\nawait api.getMe()",
-      `セル ${cells.length + 1}`,
-    );
+    const cell = createCell("", `セル ${cells.length + 1}`);
     set(cellsAtom, [...cells.slice(0, index), cell, ...cells.slice(index)]);
     set(selectedCellIdAtom, cell.id);
     set(activeCellIdAtom, cell.id);

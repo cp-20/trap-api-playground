@@ -16,8 +16,8 @@ export const TopBar = ({ onReset, onShare }: Props) => {
   return (
     <header className={styles.topbar}>
       <div className={styles.brand}>
-        <strong>traQ API Playground</strong>
-        <span>{operationCount ? `${operationCount} operations` : "OpenAPI を読み込み中..."}</span>
+        <strong>traQit</strong>
+        <span>{`${operationCount} operations`}</span>
       </div>
       {loggedIn && (
         <>

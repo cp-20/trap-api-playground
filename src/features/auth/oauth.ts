@@ -2,8 +2,8 @@ import { getClientId, getOAuthUrl, getRedirectUri } from "../../config";
 import { createLocalStorageValue } from "../../storage/localStorage";
 import { createPkcePair, randomBase64Url } from "./pkce";
 
-const PKCE_KEY = "trap-playground:pkce";
-const TOKEN_KEY = "trap-playground:token";
+const PKCE_KEY = "traq-it:pkce";
+const TOKEN_KEY = "traq-it:token";
 
 export type OAuthToken = {
   accessToken: string;

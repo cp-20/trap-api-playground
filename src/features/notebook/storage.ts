@@ -2,17 +2,46 @@ import type { CellResult, NotebookCell, NotebookSnapshot, RuntimeLogSnapshot } f
 import { createLocalStorageValue } from "../../storage/localStorage";
 import { createId } from "../../utils/ids";
 
-export const NOTEBOOK_STORAGE_KEY = "trap-playground:notebook";
-export const RUNTIME_LOG_STORAGE_KEY = "trap-playground:runtime-logs";
+export const NOTEBOOK_STORAGE_KEY = "traq-it:notebook";
+export const RUNTIME_LOG_STORAGE_KEY = "traq-it:runtime-logs";
 
 export const MAX_CONSOLE_LOGS = 600;
 export const MAX_NETWORK_LOGS = 300;
 export const MAX_MUTATION_LOGS = 120;
 export const MAX_CELL_RESULTS = 120;
 
-const DEFAULT_CODE = `const me = await api.getMe()
-console.log("me", me)
-me`;
+const DEFAULT_CODE = `// traQit へようこそ！
+// ここでは TypeScript を書いて、traQ API をその場で試せます。
+// 左の Docs から API を探し、Ctrl+Enter でこのセルを実行してください。
+//
+// 使えるもの:
+// - api: api.getMe() のように traQ API を呼び出すオブジェクト
+// - util: util.pageAll(), util.sleep(), util.now() などの補助関数
+// - me / users / channels / groups: ログイン時に読み込まれた参照データ
+//
+// 初期状態は読み取り専用 API モードです。POST/PATCH/DELETE などは
+// dry-run として記録されるため、実際に更新したいときだけ盾アイコンで切り替えてください。
+
+const currentUser = await api.getMe()
+
+const activeChannels = channels
+  .filter((channel) => !channel.archived)
+  .slice(0, 5)
+  .map((channel) => channel.fullPath)
+
+console.log("ログインユーザー", currentUser)
+console.log("読み込み済みデータ", {
+  users: users.length,
+  channels: channels.length,
+  groups: groups.length,
+})
+
+({
+  message: "Welcome to traQ API Playground!",
+  user: currentUser.displayName || currentUser.name,
+  now: util.now(),
+  activeChannels,
+})`;
 
 const parseNotebookSnapshot = (raw: string): NotebookSnapshot | null => {
   try {
