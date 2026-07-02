@@ -1,0 +1,3839 @@
+[
+  {
+    "operationId": "activateBot",
+    "method": "POST",
+    "path": "/bots/{botId}/actions/activate",
+    "summary": "BOTをアクティベート",
+    "description": "指定したBOTを有効化します。\n対象のBOTの管理権限が必要です。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "202",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "addMessageStamp",
+    "method": "POST",
+    "path": "/messages/{messageId}/stamps/{stampId}",
+    "summary": "スタンプを押す",
+    "description": "指定したメッセージに指定したスタンプを押します。",
+    "tags": [
+      "message",
+      "stamp"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "addMyStar",
+    "method": "POST",
+    "path": "/users/me/stars",
+    "summary": "チャンネルをスターに追加",
+    "description": "指定したチャンネルをスターチャンネルに追加します。\nスター済みのチャンネルIDを指定した場合、204を返します。\n不正なチャンネルIDを指定した場合、400を返します。",
+    "tags": [
+      "me",
+      "star"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "addMyUserTag",
+    "method": "POST",
+    "path": "/users/me/tags",
+    "summary": "自分にタグを追加",
+    "description": "自分に新しくタグを追加します。",
+    "tags": [
+      "me",
+      "user tag"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400",
+      "409"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "addUserGroupAdmin",
+    "method": "POST",
+    "path": "/groups/{groupId}/admins",
+    "summary": "グループ管理者を追加",
+    "description": "指定したグループに管理者を追加します。\n対象のユーザーグループの管理者権限が必要です。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "addUserGroupMember",
+    "method": "POST",
+    "path": "/groups/{groupId}/members",
+    "summary": "グループメンバーを追加",
+    "description": "指定したグループにメンバーを追加します。\n対象のユーザーグループの管理者権限が必要です。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "addUserTag",
+    "method": "POST",
+    "path": "/users/{userId}/tags",
+    "summary": "ユーザーにタグを追加",
+    "description": "指定したユーザーに指定したタグを追加します。\nWebhookユーザーにタグを追加することは出来ません。",
+    "tags": [
+      "user",
+      "user tag"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400",
+      "403",
+      "404",
+      "409"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "changeBotIcon",
+    "method": "PUT",
+    "path": "/bots/{botId}/icon",
+    "summary": "BOTのアイコン画像を変更",
+    "description": "指定したBOTのアイコン画像を変更を変更します。\n対象のBOTの管理権限が必要です。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "multipart/form-data"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404",
+      "413"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "changeMyIcon",
+    "method": "PUT",
+    "path": "/users/me/icon",
+    "summary": "自分のアイコン画像を変更",
+    "description": "自分のアイコン画像を変更します。",
+    "tags": [
+      "me"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "multipart/form-data"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "413"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "changeMyNotifyCitation",
+    "method": "PUT",
+    "path": "/users/me/settings/notify-citation",
+    "summary": "メッセージ引用通知の設定情報を変更",
+    "description": "メッセージ引用通知の設定情報を変更します",
+    "tags": [
+      "me"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "changeMyPassword",
+    "method": "PUT",
+    "path": "/users/me/password",
+    "summary": "自分のパスワードを変更",
+    "description": "自身のパスワードを変更します。",
+    "tags": [
+      "me"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "401"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "changeParticipantRole",
+    "method": "PATCH",
+    "path": "/qall/rooms/{roomId}/participants",
+    "summary": "ルームでの発言権限を変更",
+    "description": "ルーム内の参加者の発言権限を変更します。\n",
+    "tags": [
+      "qall"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": true,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "200",
+      "400",
+      "401",
+      "500"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "changeStampImage",
+    "method": "PUT",
+    "path": "/stamps/{stampId}/image",
+    "summary": "スタンプ画像を変更",
+    "description": "指定したスタンプの画像を変更します。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "multipart/form-data"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "404",
+      "413"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "changeUserGroupIcon",
+    "method": "PUT",
+    "path": "/groups/{groupId}/icon",
+    "summary": "ユーザーグループのアイコンを変更",
+    "description": "ユーザーグループのアイコンを変更します。\n対象のユーザーグループの管理者権限が必要です。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "multipart/form-data"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "404",
+      "413"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "changeUserIcon",
+    "method": "PUT",
+    "path": "/users/{userId}/icon",
+    "summary": "ユーザーのアイコン画像を変更します",
+    "description": "指定したユーザーのアイコン画像を変更します。\n管理者権限が必要です。",
+    "tags": [
+      "user"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "multipart/form-data"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404",
+      "413"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "changeUserPassword",
+    "method": "PUT",
+    "path": "/users/{userId}/password",
+    "summary": "ユーザーのパスワードを変更",
+    "description": "指定したユーザーのパスワードを変更します。\n管理者権限が必要です。",
+    "tags": [
+      "user"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "changeWebhookIcon",
+    "method": "PUT",
+    "path": "/webhooks/{webhookId}/icon",
+    "summary": "Webhookのアイコンを変更",
+    "description": "指定したWebhookのアイコン画像を変更します。",
+    "tags": [
+      "webhook"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "multipart/form-data"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "404",
+      "413"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "clipMessage",
+    "method": "POST",
+    "path": "/clip-folders/{folderId}/messages",
+    "summary": "メッセージをクリップフォルダに追加",
+    "description": "指定したメッセージを指定したクリップフォルダに追加します。",
+    "tags": [
+      "clip"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "200",
+      "400",
+      "404",
+      "409"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "connectBotWS",
+    "method": "GET",
+    "path": "/bots/ws",
+    "summary": "WebSocket Mode BOT用通知ストリームに接続します",
+    "description": "# BOT WebSocketプロトコル\n\n## 送信\n\n`コマンド:引数1:引数2:...` のような形式のTextMessageをサーバーに送信することで、このWebSocketセッションに対する設定が実行できます。\n\n### `rtcstate`コマンド\n自分のWebRTC状態を変更します。\n他のコネクションが既に状態を保持している場合、変更することができません。\n\n`rtcstate:{チャンネルID}:({状態}:{セッションID})*`\n\nチャンネルIDにnullもしくは空文字を指定するか、状態にnullもしくは空文字を指定した場合、WebRTC状態はリセットされます。\n\n`rtcstate:null`, `rtcstate:`, `rtcstate:channelId:null`, `rtcstate:channelId:`\n\nコネクションが切断された場合、自分のWebRTC状態はリセットされます。\n\n## 受信\n\nTextMessageとして各種イベントが`type`、`reqId`、`body`を持つJSONとして非同期に送られます。\n`body`の内容はHTTP Modeの場合のRequest Bodyと同様です。\n例外として`ERROR`イベントは`reqId`を持ちません。\n\n例: PINGイベント\n`{\"type\":\"PING\",\"reqId\":\"requestId\",\"body\":{\"eventTime\":\"2019-05-07T04:50:48.582586882Z\"}}`\n\n### `ERROR`\n\nコマンドの引数が不正などの理由でコマンドが受理されなかった場合に送られます。\n非同期に送られるため、必ずしもコマンドとの対応関係を確定できないことに注意してください。\n本番環境ではERRORが送られないようにすることが望ましいです。\n\n`{\"type\":\"ERROR\",\"body\":\"message\"}`",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "101"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "createBot",
+    "method": "POST",
+    "path": "/bots",
+    "summary": "BOTを作成",
+    "description": "BOTを作成します。\n作成後に購読イベントの設定を行う必要があります。\nさらにHTTP Modeの場合はアクティベーションを行う必要があります。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400",
+      "409"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "createChannel",
+    "method": "POST",
+    "path": "/channels",
+    "summary": "チャンネルを作成",
+    "description": "チャンネルを作成します。\n階層が6以上になるチャンネルは作成できません。",
+    "tags": [
+      "channel"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400",
+      "403",
+      "409"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "createClient",
+    "method": "POST",
+    "path": "/clients",
+    "summary": "OAuth2クライアントを作成",
+    "description": "OAuth2クライアントを作成します。",
+    "tags": [
+      "oauth2"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "createClipFolder",
+    "method": "POST",
+    "path": "/clip-folders",
+    "summary": "クリップフォルダを作成",
+    "description": "クリップフォルダを作成します。\n既にあるフォルダと同名のフォルダを作成することは可能です。",
+    "tags": [
+      "clip"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "createPin",
+    "method": "POST",
+    "path": "/messages/{messageId}/pin",
+    "summary": "ピン留めする",
+    "description": "指定したメッセージをピン留めします。\nアーカイブされているチャンネルのメッセージ・存在しないメッセージ・チャンネル当たりの上限数を超えたメッセージのピン留めはできません。",
+    "tags": [
+      "message",
+      "pin"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "201",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "createStamp",
+    "method": "POST",
+    "path": "/stamps",
+    "summary": "スタンプを作成",
+    "description": "スタンプを新規作成します。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "multipart/form-data"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400",
+      "409",
+      "413"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "createStampPalette",
+    "method": "POST",
+    "path": "/stamp-palettes",
+    "summary": "スタンプパレットを作成",
+    "description": "スタンプパレットを作成します。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "createUser",
+    "method": "POST",
+    "path": "/users",
+    "summary": "ユーザーを登録",
+    "description": "ユーザーを登録します。\n管理者権限が必要です。",
+    "tags": [
+      "user"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400",
+      "403",
+      "409"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "createUserGroup",
+    "method": "POST",
+    "path": "/groups",
+    "summary": "ユーザーグループを作成",
+    "description": "ユーザーグループを作成します。\n作成者は自動的にグループ管理者になります。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400",
+      "403",
+      "409"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "createWebhook",
+    "method": "POST",
+    "path": "/webhooks",
+    "summary": "Webhookを新規作成",
+    "description": "Webhookを新規作成します。\n`secret`が空文字の場合、insecureウェブフックが作成されます。",
+    "tags": [
+      "webhook"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "deleteBot",
+    "method": "DELETE",
+    "path": "/bots/{botId}",
+    "summary": "BOTを削除",
+    "description": "指定したBOTを削除します。\n対象のBOTの管理権限が必要です。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "deleteClient",
+    "method": "DELETE",
+    "path": "/clients/{clientId}",
+    "summary": "OAuth2クライアントを削除",
+    "description": "指定したOAuth2クライアントを削除します。\n対象のクライアントの管理権限が必要です。正常に削除された場合、このクライアントに対する認可は全て取り消されます。",
+    "tags": [
+      "oauth2"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "deleteClipFolder",
+    "method": "DELETE",
+    "path": "/clip-folders/{folderId}",
+    "summary": "クリップフォルダを削除",
+    "description": "指定したクリップフォルダを削除します。",
+    "tags": [
+      "clip"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "deleteFile",
+    "method": "DELETE",
+    "path": "/files/{fileId}",
+    "summary": "ファイルを削除",
+    "description": "指定したファイルを削除します。\n指定したファイルの削除権限が必要です。",
+    "tags": [
+      "file"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "deleteMessage",
+    "method": "DELETE",
+    "path": "/messages/{messageId}",
+    "summary": "メッセージを削除",
+    "description": "指定したメッセージを削除します。\n自身が投稿したメッセージと自身が管理権限を持つWebhookとBOTが投稿したメッセージのみ削除することができます。\nアーカイブされているチャンネルのメッセージを編集することは出来ません。",
+    "tags": [
+      "message"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "deleteOgpCache",
+    "method": "DELETE",
+    "path": "/ogp/cache",
+    "summary": "OGP情報のキャッシュを削除",
+    "description": "指定されたURLのOGP情報のキャッシュを削除します。",
+    "tags": [
+      "ogp"
+    ],
+    "parameters": [
+      {
+        "name": "url",
+        "in": "query",
+        "required": true,
+        "description": "OGPのキャッシュを削除したいURL",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responseStatus": [
+      "204",
+      "400"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "deleteStamp",
+    "method": "DELETE",
+    "path": "/stamps/{stampId}",
+    "summary": "スタンプを削除",
+    "description": "指定したスタンプを削除します。\n対象のスタンプの削除権限が必要です。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "deleteStampPalette",
+    "method": "DELETE",
+    "path": "/stamp-palettes/{paletteId}",
+    "summary": "スタンプパレットを削除",
+    "description": "指定したスタンプパレットを削除します。\n対象のスタンプパレットの管理権限が必要です。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "deleteUserGroup",
+    "method": "DELETE",
+    "path": "/groups/{groupId}",
+    "summary": "ユーザーグループを削除",
+    "description": "指定したユーザーグループを削除します。\n対象のユーザーグループの管理者権限が必要です。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "deleteWebhook",
+    "method": "DELETE",
+    "path": "/webhooks/{webhookId}",
+    "summary": "Webhookを削除",
+    "description": "指定したWebhookを削除します。\nWebhookによって投稿されたメッセージは削除されません。",
+    "tags": [
+      "webhook"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "DeleteWebhookMessage",
+    "method": "DELETE",
+    "path": "/webhooks/{webhookId}/messages/{messageId}",
+    "summary": "Webhookの投稿メッセージを削除",
+    "description": "指定されたWebhookが投稿したメッセージを削除します。",
+    "tags": [
+      "webhook"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "editBot",
+    "method": "PATCH",
+    "path": "/bots/{botId}",
+    "summary": "BOT情報を変更",
+    "description": "指定したBOTの情報を変更します。\n対象のBOTの管理権限が必要です。\nBOT開発者UUIDを変更した場合は、変更先ユーザーにBOT管理権限が移譲され、自分自身は権限を失います。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editChannel",
+    "method": "PATCH",
+    "path": "/channels/{channelId}",
+    "summary": "チャンネル情報を変更",
+    "description": "指定したチャンネルの情報を変更します。\n変更には権限が必要です。\nルートチャンネルに移動させる場合は、`parent`に`00000000-0000-0000-0000-000000000000`を指定してください。",
+    "tags": [
+      "channel"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404",
+      "409"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editChannelSubscribers",
+    "method": "PATCH",
+    "path": "/channels/{channelId}/subscribers",
+    "summary": "チャンネルの通知購読者を編集",
+    "description": "指定したチャンネルの通知購読者を編集します。\nリクエストに含めなかったユーザーの通知購読状態は変更しません。\nまた、存在しないユーザーを指定した場合は無視されます。",
+    "tags": [
+      "channel",
+      "notification"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editChannelTopic",
+    "method": "PUT",
+    "path": "/channels/{channelId}/topic",
+    "summary": "チャンネルトピックを編集",
+    "description": "指定したチャンネルのトピックを編集します。\nアーカイブされているチャンネルのトピックは編集できません。",
+    "tags": [
+      "channel"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editClient",
+    "method": "PATCH",
+    "path": "/clients/{clientId}",
+    "summary": "OAuth2クライアント情報を変更",
+    "description": "指定したOAuth2クライアントの情報を変更します。\n対象のクライアントの管理権限が必要です。\nクライアント開発者UUIDを変更した場合は、変更先ユーザーにクライアント管理権限が移譲され、自分自身は権限を失います。",
+    "tags": [
+      "oauth2"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editClipFolder",
+    "method": "PATCH",
+    "path": "/clip-folders/{folderId}",
+    "summary": "クリップフォルダ情報を編集",
+    "description": "指定したクリップフォルダの情報を編集します。",
+    "tags": [
+      "clip"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editMe",
+    "method": "PATCH",
+    "path": "/users/me",
+    "summary": "自分のユーザー情報を変更",
+    "description": "自身のユーザー情報を変更します。",
+    "tags": [
+      "me"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editMessage",
+    "method": "PUT",
+    "path": "/messages/{messageId}",
+    "summary": "メッセージを編集",
+    "description": "指定したメッセージを編集します。\n自身が投稿したメッセージのみ編集することができます。\nアーカイブされているチャンネルのメッセージを編集することは出来ません。",
+    "tags": [
+      "message"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editMyUserTag",
+    "method": "PATCH",
+    "path": "/users/me/tags/{tagId}",
+    "summary": "自分のタグを編集",
+    "description": "自分の指定したタグの状態を変更します。",
+    "tags": [
+      "user tag",
+      "me"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editStamp",
+    "method": "PATCH",
+    "path": "/stamps/{stampId}",
+    "summary": "スタンプ情報を変更",
+    "description": "指定したスタンプの情報を変更します。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404",
+      "409"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editStampPalette",
+    "method": "PATCH",
+    "path": "/stamp-palettes/{paletteId}",
+    "summary": "スタンプパレットを編集",
+    "description": "指定したスタンプパレットを編集します。\nリクエストのスタンプの配列の順番は保存されて変更されます。\n対象のスタンプパレットの管理権限が必要です。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editUser",
+    "method": "PATCH",
+    "path": "/users/{userId}",
+    "summary": "ユーザー情報を変更",
+    "description": "指定したユーザーの情報を変更します。\n管理者権限が必要です。",
+    "tags": [
+      "user"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editUserGroup",
+    "method": "PATCH",
+    "path": "/groups/{groupId}",
+    "summary": "ユーザーグループを編集",
+    "description": "指定したユーザーグループの情報を編集します。\n対象のユーザーグループの管理者権限が必要です。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404",
+      "409"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editUserGroupMember",
+    "method": "PATCH",
+    "path": "/groups/{groupId}/members/{userId}",
+    "summary": "グループメンバーを編集",
+    "description": "指定したユーザーグループ内の指定したユーザーの属性を編集します。\n対象のユーザーグループの管理者権限が必要です。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editUserTag",
+    "method": "PATCH",
+    "path": "/users/{userId}/tags/{tagId}",
+    "summary": "ユーザーのタグを編集",
+    "description": "指定したユーザーの指定したタグの状態を変更します。\n他人の状態は変更できません。",
+    "tags": [
+      "user",
+      "user tag"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "editWebhook",
+    "method": "PATCH",
+    "path": "/webhooks/{webhookId}",
+    "summary": "Webhook情報を変更",
+    "description": "指定したWebhookの情報を変更します。",
+    "tags": [
+      "webhook"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "getActivityTimeline",
+    "method": "GET",
+    "path": "/activity/timeline",
+    "summary": "アクテビティタイムラインを取得",
+    "description": "パブリックチャンネルの直近の投稿メッセージを作成日時の降順で取得します。\n`all`が`true`でない場合、購読チャンネルのみのタイムラインを取得します",
+    "tags": [
+      "activity"
+    ],
+    "parameters": [
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "description": "取得する件数",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 50
+        }
+      },
+      {
+        "name": "all",
+        "in": "query",
+        "required": false,
+        "description": "全てのチャンネルのタイムラインを取得する",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      {
+        "name": "per_channel",
+        "in": "query",
+        "required": false,
+        "description": "同じチャンネルのメッセージは最新のもののみ取得するか",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    ],
+    "responseStatus": [
+      "200",
+      "400"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getBot",
+    "method": "GET",
+    "path": "/bots/{botId}",
+    "summary": "BOT情報を取得",
+    "description": "指定したBOTのBOT情報を取得します。\nBOT詳細情報を取得する場合は、対象のBOTの管理権限が必要です。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [
+      {
+        "name": "detail",
+        "in": "query",
+        "required": false,
+        "description": "詳細情報を含めるかどうか",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    ],
+    "responseStatus": [
+      "200",
+      "403",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getBotIcon",
+    "method": "GET",
+    "path": "/bots/{botId}/icon",
+    "summary": "BOTのアイコン画像を取得",
+    "description": "指定したBOTのアイコン画像を取得を取得します。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getBotLogs",
+    "method": "GET",
+    "path": "/bots/{botId}/logs",
+    "summary": "BOTのイベントログを取得",
+    "description": "指定したBOTのイベントログを取得します。\n対象のBOTの管理権限が必要です。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "403",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getBots",
+    "method": "GET",
+    "path": "/bots",
+    "summary": "BOTリストを取得",
+    "description": "BOT情報のリストを取得します。\nallを指定しない場合、自分が開発者のBOTのみを返します。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [
+      {
+        "name": "all",
+        "in": "query",
+        "required": false,
+        "description": "全てのBOTを取得するかどうか",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    ],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getChannel",
+    "method": "GET",
+    "path": "/channels/{channelId}",
+    "summary": "チャンネル情報を取得",
+    "description": "指定したチャンネルの情報を取得します。",
+    "tags": [
+      "channel"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getChannelBots",
+    "method": "GET",
+    "path": "/channels/{channelId}/bots",
+    "summary": "チャンネル参加中のBOTのリストを取得",
+    "description": "指定したチャンネルに参加しているBOTのリストを取得します。",
+    "tags": [
+      "bot",
+      "channel"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getChannelEvents",
+    "method": "GET",
+    "path": "/channels/{channelId}/events",
+    "summary": "チャンネルイベントのリストを取得",
+    "description": "指定したチャンネルのイベントリストを取得します。",
+    "tags": [
+      "channel"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "400",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getChannelPath",
+    "method": "GET",
+    "path": "/channels/{channelId}/path",
+    "summary": "指定したチャンネルパスを取得",
+    "description": "指定されたチャンネルのパスを取得します。",
+    "tags": [
+      "channel"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getChannelPins",
+    "method": "GET",
+    "path": "/channels/{channelId}/pins",
+    "summary": "チャンネルピンのリストを取得",
+    "description": "指定したチャンネルにピン留めされているピンメッセージのリストを取得します。",
+    "tags": [
+      "channel",
+      "pin"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getChannels",
+    "method": "GET",
+    "path": "/channels",
+    "summary": "チャンネルリストを取得",
+    "description": "チャンネルのリストを取得します。",
+    "tags": [
+      "channel"
+    ],
+    "parameters": [
+      {
+        "name": "include-dm",
+        "in": "query",
+        "required": false,
+        "description": "ダイレクトメッセージチャンネルをレスポンスに含めるかどうか",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      {
+        "name": "path",
+        "in": "query",
+        "required": false,
+        "description": "パスが一致するチャンネルのみを取得する",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getChannelStats",
+    "method": "GET",
+    "path": "/channels/{channelId}/stats",
+    "summary": "チャンネル統計情報を取得",
+    "description": "指定したチャンネルの統計情報を取得します。",
+    "tags": [
+      "channel"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getChannelSubscribers",
+    "method": "GET",
+    "path": "/channels/{channelId}/subscribers",
+    "summary": "チャンネルの通知購読者のリストを取得",
+    "description": "指定したチャンネルを通知購読しているユーザーのUUIDのリストを取得します。",
+    "tags": [
+      "channel",
+      "notification"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "403",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getChannelTopic",
+    "method": "GET",
+    "path": "/channels/{channelId}/topic",
+    "summary": "チャンネルトピックを取得",
+    "description": "指定したチャンネルのトピックを取得します。",
+    "tags": [
+      "channel"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getChannelViewers",
+    "method": "GET",
+    "path": "/channels/{channelId}/viewers",
+    "summary": "チャンネル閲覧者リストを取得",
+    "description": "指定したチャンネルの閲覧者のリストを取得します。",
+    "tags": [
+      "channel"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getClient",
+    "method": "GET",
+    "path": "/clients/{clientId}",
+    "summary": "OAuth2クライアント情報を取得",
+    "description": "指定したOAuth2クライアントの情報を取得します。\n詳細情報の取得には対象のクライアントの管理権限が必要です。",
+    "tags": [
+      "oauth2"
+    ],
+    "parameters": [
+      {
+        "name": "detail",
+        "in": "query",
+        "required": false,
+        "description": "詳細情報を含めるかどうか",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    ],
+    "responseStatus": [
+      "200",
+      "403",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getClients",
+    "method": "GET",
+    "path": "/clients",
+    "summary": "OAuth2クライアントのリストを取得",
+    "description": "自身が開発者のOAuth2クライアントのリストを取得します。\n`all`が`true`の場合、全開発者の全クライアントのリストを返します。",
+    "tags": [
+      "oauth2"
+    ],
+    "parameters": [
+      {
+        "name": "all",
+        "in": "query",
+        "required": false,
+        "description": "全てのクライアントを取得するかどうか",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    ],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getClipFolder",
+    "method": "GET",
+    "path": "/clip-folders/{folderId}",
+    "summary": "クリップフォルダ情報を取得",
+    "description": "指定したクリップフォルダの情報を取得します。",
+    "tags": [
+      "clip"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getClipFolders",
+    "method": "GET",
+    "path": "/clip-folders",
+    "summary": "クリップフォルダのリストを取得",
+    "description": "自身が所有するクリップフォルダのリストを取得します。",
+    "tags": [
+      "clip"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getClips",
+    "method": "GET",
+    "path": "/clip-folders/{folderId}/messages",
+    "summary": "フォルダ内のクリップのリストを取得",
+    "description": "指定したフォルダ内のクリップのリストを取得します。\n`order`を指定しない場合、クリップした日時の新しい順で返されます。",
+    "tags": [
+      "clip"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "getDirectMessages",
+    "method": "GET",
+    "path": "/users/{userId}/messages",
+    "summary": "ダイレクトメッセージのリストを取得",
+    "description": "指定したユーザーとのダイレクトメッセージのリストを取得します。",
+    "tags": [
+      "message",
+      "user"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "getFile",
+    "method": "GET",
+    "path": "/files/{fileId}",
+    "summary": "ファイルをダウンロード",
+    "description": "指定したファイル本体を取得します。\n指定したファイルへのアクセス権限が必要です。",
+    "tags": [
+      "file"
+    ],
+    "parameters": [
+      {
+        "name": "dl",
+        "in": "query",
+        "required": false,
+        "description": "1を指定するとレスポンスにContent-Dispositionヘッダーが付与されます",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "responseStatus": [
+      "200",
+      "403",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getFileMeta",
+    "method": "GET",
+    "path": "/files/{fileId}/meta",
+    "summary": "ファイルメタを取得",
+    "description": "指定したファイルのメタ情報を取得します。\n指定したファイルへのアクセス権限が必要です。",
+    "tags": [
+      "file"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "403",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getFiles",
+    "method": "GET",
+    "path": "/files",
+    "summary": "ファイルメタのリストを取得",
+    "description": "指定したクエリでファイルメタのリストを取得します。\nクエリパラメータ`channelId`, `mine`の少なくともいずれかが必須です。",
+    "tags": [
+      "file"
+    ],
+    "parameters": [
+      {
+        "name": "channelId",
+        "in": "query",
+        "required": false,
+        "description": "アップロード先チャンネルUUID",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "mine",
+        "in": "query",
+        "required": false,
+        "description": "アップロード者が自分のファイルのみを取得するか",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    ],
+    "responseStatus": [
+      "200",
+      "400"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getLiveKitToken",
+    "method": "GET",
+    "path": "/qall/token",
+    "summary": "LiveKitトークンを取得",
+    "description": "指定したルームに参加するためのLiveKitトークンを取得します。\n",
+    "tags": [
+      "qall"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "400",
+      "401",
+      "500"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMe",
+    "method": "GET",
+    "path": "/users/me",
+    "summary": "自分のユーザー詳細を取得",
+    "description": "自身のユーザー詳細情報を取得します。",
+    "tags": [
+      "me"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMessage",
+    "method": "GET",
+    "path": "/messages/{messageId}",
+    "summary": "メッセージを取得",
+    "description": "指定したメッセージを取得します。",
+    "tags": [
+      "message"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "getMessageClips",
+    "method": "GET",
+    "path": "/messages/{messageId}/clips",
+    "summary": "自分のクリップを取得",
+    "description": "対象のメッセージの自分のクリップの一覧を返します。",
+    "tags": [
+      "message",
+      "clip"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "getMessages",
+    "method": "GET",
+    "path": "/channels/{channelId}/messages",
+    "summary": "チャンネルメッセージのリストを取得",
+    "description": "指定したチャンネルのメッセージのリストを取得します。",
+    "tags": [
+      "channel",
+      "message"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "getMessageStamps",
+    "method": "GET",
+    "path": "/messages/{messageId}/stamps",
+    "summary": "メッセージのスタンプリストを取得",
+    "description": "指定したメッセージに押されているスタンプのリストを取得します。",
+    "tags": [
+      "message",
+      "stamp"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "getMyChannelSubscriptions",
+    "method": "GET",
+    "path": "/users/me/subscriptions",
+    "summary": "自分のチャンネル購読状態を取得",
+    "description": "自身のチャンネル購読状態を取得します。",
+    "tags": [
+      "me",
+      "notification"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMyExternalAccounts",
+    "method": "GET",
+    "path": "/users/me/ex-accounts",
+    "summary": "外部ログインアカウント一覧を取得",
+    "description": "自分に紐付けられている外部ログインアカウント一覧を取得します。",
+    "tags": [
+      "authentication",
+      "me"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMyIcon",
+    "method": "GET",
+    "path": "/users/me/icon",
+    "summary": "自分のアイコン画像を取得",
+    "description": "自分のアイコン画像を取得します。",
+    "tags": [
+      "me"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMyNotifyCitation",
+    "method": "GET",
+    "path": "/users/me/settings/notify-citation",
+    "summary": "メッセージ引用通知の設定情報を取得",
+    "description": "メッセージ引用通知の設定情報を変更します。",
+    "tags": [
+      "me"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMyQRCode",
+    "method": "GET",
+    "path": "/users/me/qr-code",
+    "summary": "QRコードを取得",
+    "description": "自身のQRコードを取得します。\n返されたQRコードまたはトークンは、発行後の5分間のみ有効です",
+    "tags": [
+      "me"
+    ],
+    "parameters": [
+      {
+        "name": "token",
+        "in": "query",
+        "required": false,
+        "description": "画像でなくトークン文字列で返すかどうか",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    ],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMySessions",
+    "method": "GET",
+    "path": "/users/me/sessions",
+    "summary": "自分のログインセッションリストを取得",
+    "description": "自分のログインセッションのリストを取得します。",
+    "tags": [
+      "authentication",
+      "me"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMyStampHistory",
+    "method": "GET",
+    "path": "/users/me/stamp-history",
+    "summary": "スタンプ履歴を取得",
+    "description": "自分のスタンプ履歴を最大100件まで取得します。\n結果は降順で返されます。\n\nこのAPIが返すスタンプ履歴は厳密な履歴ではありません。",
+    "tags": [
+      "stamp",
+      "me"
+    ],
+    "parameters": [
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "description": "件数",
+        "schema": {
+          "type": "integer",
+          "default": 100,
+          "maximum": 100,
+          "minimum": 1
+        }
+      }
+    ],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMyStampRecommendations",
+    "method": "GET",
+    "path": "/users/me/stamp-recommendations",
+    "summary": "スタンプレコメンドを取得",
+    "description": "自分のスタンプレコメンドを最大200件まで取得します。\n結果は推薦度の高い順で返されます。\nスタンプを使用したことがないユーザーの場合は空配列が返されます。",
+    "tags": [
+      "stamp",
+      "me"
+    ],
+    "parameters": [
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "description": "件数",
+        "schema": {
+          "type": "integer",
+          "default": 100,
+          "maximum": 200,
+          "minimum": 1
+        }
+      }
+    ],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMyStars",
+    "method": "GET",
+    "path": "/users/me/stars",
+    "summary": "スターチャンネルリストを取得",
+    "description": "自分がスターしているチャンネルのUUIDの配列を取得します。",
+    "tags": [
+      "me",
+      "star"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMyTokens",
+    "method": "GET",
+    "path": "/users/me/tokens",
+    "summary": "有効トークンのリストを取得",
+    "description": "有効な自分に発行されたOAuth2トークンのリストを取得します。",
+    "tags": [
+      "oauth2",
+      "me"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMyUnreadChannels",
+    "method": "GET",
+    "path": "/users/me/unread",
+    "summary": "未読チャンネルを取得",
+    "description": "自分が現在未読のチャンネルの未読情報を取得します。",
+    "tags": [
+      "me",
+      "notification"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMyUserTags",
+    "method": "GET",
+    "path": "/users/me/tags",
+    "summary": "自分のタグリストを取得",
+    "description": "自分に付けられているタグの配列を取得します。",
+    "tags": [
+      "me",
+      "user tag"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getMyViewStates",
+    "method": "GET",
+    "path": "/users/me/view-states",
+    "summary": "自身のチャンネル閲覧状態一覧を取得",
+    "description": "自身のチャンネル閲覧状態一覧を取得します。",
+    "tags": [
+      "me",
+      "notification"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getOAuth2Authorize",
+    "method": "GET",
+    "path": "/oauth2/authorize",
+    "summary": "OAuth2 認可エンドポイント",
+    "description": "OAuth2 認可エンドポイント",
+    "tags": [
+      "oauth2"
+    ],
+    "parameters": [
+      {
+        "name": "response_type",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "$ref": "#/components/schemas/OAuth2ResponseType"
+        }
+      },
+      {
+        "name": "client_id",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "redirect_uri",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "scope",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "state",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "code_challenge",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "code_challenge_method",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "nonce",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "prompt",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "$ref": "#/components/schemas/OAuth2Prompt"
+        }
+      }
+    ],
+    "responseStatus": [
+      "302",
+      "400",
+      "403"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getOgp",
+    "method": "GET",
+    "path": "/ogp",
+    "summary": "OGP情報を取得",
+    "description": "指定されたURLのOGP情報を取得します。\n指定されたURLに対するOGP情報が見つからなかった場合、typeがemptyに設定された空のOGP情報を返します。\n",
+    "tags": [
+      "ogp"
+    ],
+    "parameters": [
+      {
+        "name": "url",
+        "in": "query",
+        "required": true,
+        "description": "OGPを取得したいURL",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responseStatus": [
+      "200",
+      "400"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getOIDCUserInfo",
+    "method": "GET",
+    "path": "/users/me/oidc",
+    "summary": "自分のユーザー詳細を取得 (OIDC UserInfo)",
+    "description": "OIDCトークンを用いてユーザー詳細を取得します。\nOIDC UserInfo Endpointです。\n",
+    "tags": [
+      "me"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getOnlineUsers",
+    "method": "GET",
+    "path": "/activity/onlines",
+    "summary": "オンラインユーザーリストを取得",
+    "description": "現在オンラインな(SSEまたはWSが接続中)ユーザーのUUIDのリストを返します。",
+    "tags": [
+      "activity"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getPin",
+    "method": "GET",
+    "path": "/messages/{messageId}/pin",
+    "summary": "ピン留めを取得",
+    "description": "指定したメッセージのピン留め情報を取得します。",
+    "tags": [
+      "message",
+      "pin"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "getPublicUserIcon",
+    "method": "GET",
+    "path": "/public/icon/{username}",
+    "summary": "ユーザーのアイコン画像を取得",
+    "description": "ユーザーのアイコン画像を取得します。",
+    "tags": [
+      "public"
+    ],
+    "parameters": [
+      {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "description": "ユーザー名",
+        "schema": {
+          "type": "string",
+          "pattern": "^([a-zA-Z0-9_-]{1,32}|Webhook#[a-zA-Z0-9_-]{22})$"
+        }
+      }
+    ],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getQallEndpoints",
+    "method": "GET",
+    "path": "/qall/endpoints",
+    "summary": "LiveKitエンドポイントを取得",
+    "description": "接続可能なLiveKitエンドポイントを取得します。\n",
+    "tags": [
+      "qall"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404",
+      "500"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getRoomMetadata",
+    "method": "GET",
+    "path": "/qall/rooms/{roomId}/metadata",
+    "summary": "ルームのメタデータを取得",
+    "description": "ルームのメタデータを取得します。\n",
+    "tags": [
+      "qall"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404",
+      "500"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getRooms",
+    "method": "GET",
+    "path": "/qall/rooms",
+    "summary": "ルームと参加者の一覧を取得",
+    "description": "現在存在する(またはアクティブな)ルームと、そのルームに所属している参加者情報を取得します。\n",
+    "tags": [
+      "qall"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404",
+      "500"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getServerVersion",
+    "method": "GET",
+    "path": "/version",
+    "summary": "バージョンを取得",
+    "description": "サーバーバージョン及びサーバーフラグ情報を取得します。",
+    "tags": [
+      "public"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getSoundboardList",
+    "method": "GET",
+    "path": "/qall/soundboard",
+    "summary": "サウンドボード用の音声一覧を取得",
+    "description": "DBに保存されたサウンドボード情報を取得します。   各アイテムには soundId, soundName, stampId が含まれます。\n",
+    "tags": [
+      "qall"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "500"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getStamp",
+    "method": "GET",
+    "path": "/stamps/{stampId}",
+    "summary": "スタンプ情報を取得",
+    "description": "指定したスタンプの情報を取得します。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getStampImage",
+    "method": "GET",
+    "path": "/stamps/{stampId}/image",
+    "summary": "スタンプ画像を取得",
+    "description": "指定したIDのスタンプ画像を返します。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getStampPalette",
+    "method": "GET",
+    "path": "/stamp-palettes/{paletteId}",
+    "summary": "スタンプパレットを取得",
+    "description": "指定したスタンプパレットの情報を取得します。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getStampPalettes",
+    "method": "GET",
+    "path": "/stamp-palettes",
+    "summary": "スタンプパレットのリストを取得",
+    "description": "自身が所有しているスタンプパレットのリストを取得します。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getStamps",
+    "method": "GET",
+    "path": "/stamps",
+    "summary": "スタンプリストを取得",
+    "description": "スタンプのリストを取得します。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [
+      {
+        "name": "include-unicode",
+        "in": "query",
+        "required": false,
+        "description": "Unicode絵文字を含ませるかどうか\nDeprecated: typeクエリを指定しなければ全てのスタンプを取得できるため、そちらを利用してください\n",
+        "schema": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      {
+        "name": "type",
+        "in": "query",
+        "required": false,
+        "description": "取得するスタンプの種類",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "unicode",
+            "original"
+          ]
+        }
+      }
+    ],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getStampStats",
+    "method": "GET",
+    "path": "/stamps/{stampId}/stats",
+    "summary": "スタンプ統計情報を取得",
+    "description": "指定したスタンプの統計情報を取得します。",
+    "tags": [
+      "stamp"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getTag",
+    "method": "GET",
+    "path": "/tags/{tagId}",
+    "summary": "タグ情報を取得",
+    "description": "指定したタグの情報を取得します。",
+    "tags": [
+      "user tag"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getThumbnailImage",
+    "method": "GET",
+    "path": "/files/{fileId}/thumbnail",
+    "summary": "サムネイル画像を取得",
+    "description": "指定したファイルのサムネイル画像を取得します。\n指定したファイルへのアクセス権限が必要です。",
+    "tags": [
+      "file"
+    ],
+    "parameters": [
+      {
+        "name": "type",
+        "in": "query",
+        "required": false,
+        "description": "取得するサムネイルのタイプ",
+        "schema": {
+          "$ref": "#/components/schemas/ThumbnailType"
+        }
+      }
+    ],
+    "responseStatus": [
+      "200",
+      "403",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getUser",
+    "method": "GET",
+    "path": "/users/{userId}",
+    "summary": "ユーザー詳細情報を取得",
+    "description": "指定したユーザーの詳細情報を取得します。",
+    "tags": [
+      "user"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getUserDMChannel",
+    "method": "GET",
+    "path": "/users/{userId}/dm-channel",
+    "summary": "DMチャンネル情報を取得",
+    "description": "指定したユーザーとのダイレクトメッセージチャンネルの情報を返します。\nダイレクトメッセージチャンネルが存在しなかった場合、自動的に作成されます。",
+    "tags": [
+      "user",
+      "channel"
+    ],
+    "parameters": [
+      {
+        "name": "userId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getUserGroup",
+    "method": "GET",
+    "path": "/groups/{groupId}",
+    "summary": "ユーザーグループを取得",
+    "description": "指定したユーザーグループの情報を取得します。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getUserGroupAdmins",
+    "method": "GET",
+    "path": "/groups/{groupId}/admins",
+    "summary": "グループ管理者を取得",
+    "description": "指定したグループの管理者のリストを取得します。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getUserGroupMembers",
+    "method": "GET",
+    "path": "/groups/{groupId}/members",
+    "summary": "グループメンバーを取得",
+    "description": "指定したグループのメンバーのリストを取得します。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getUserGroups",
+    "method": "GET",
+    "path": "/groups",
+    "summary": "ユーザーグループのリストを取得",
+    "description": "ユーザーグループのリストを取得します。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getUserIcon",
+    "method": "GET",
+    "path": "/users/{userId}/icon",
+    "summary": "ユーザーのアイコン画像を取得",
+    "description": "指定したユーザーのアイコン画像を取得します。",
+    "tags": [
+      "user"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getUsers",
+    "method": "GET",
+    "path": "/users",
+    "summary": "ユーザーのリストを取得",
+    "description": "ユーザーのリストを取得します。\n`include-suspended`を指定しない場合、レスポンスにはユーザーアカウント状態が\"1: 有効\"であるユーザーのみが含まれます。\n`include-suspended`と`name`を同時に指定することはできません。",
+    "tags": [
+      "user"
+    ],
+    "parameters": [
+      {
+        "name": "include-suspended",
+        "in": "query",
+        "required": false,
+        "description": "アカウントがアクティブでないユーザーを含め、全てのユーザーを取得するかどうか",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      {
+        "name": "name",
+        "in": "query",
+        "required": false,
+        "description": "名前が一致するアカウントのみを取得する",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responseStatus": [
+      "200",
+      "400"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getUserSettings",
+    "method": "GET",
+    "path": "/users/me/settings",
+    "summary": "ユーザー設定を取得",
+    "description": "ユーザー設定を取得します。",
+    "tags": [
+      "me"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getUserStats",
+    "method": "GET",
+    "path": "/users/{userId}/stats",
+    "summary": "ユーザー統計情報を取得",
+    "description": "指定したユーザーの統計情報を取得します。",
+    "tags": [
+      "user"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getUserTags",
+    "method": "GET",
+    "path": "/users/{userId}/tags",
+    "summary": "ユーザーのタグリストを取得",
+    "description": "指定したユーザーのタグリストを取得します。",
+    "tags": [
+      "user",
+      "user tag"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getWebhook",
+    "method": "GET",
+    "path": "/webhooks/{webhookId}",
+    "summary": "Webhook情報を取得",
+    "description": "指定したWebhookの詳細を取得します。",
+    "tags": [
+      "webhook"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getWebhookIcon",
+    "method": "GET",
+    "path": "/webhooks/{webhookId}/icon",
+    "summary": "Webhookのアイコンを取得",
+    "description": "指定したWebhookのアイコン画像を取得します",
+    "tags": [
+      "webhook"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "404"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getWebhookMessages",
+    "method": "GET",
+    "path": "/webhooks/{webhookId}/messages",
+    "summary": "Webhookの投稿メッセージのリストを取得",
+    "description": "指定されたWebhookが投稿したメッセージのリストを返します。",
+    "tags": [
+      "webhook"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "getWebhooks",
+    "method": "GET",
+    "path": "/webhooks",
+    "summary": "Webhook情報のリストを取得します",
+    "description": "Webhookのリストを取得します。\nallがtrueで無い場合は、自分がオーナーのWebhookのリストを返します。",
+    "tags": [
+      "webhook"
+    ],
+    "parameters": [
+      {
+        "name": "all",
+        "in": "query",
+        "required": false,
+        "description": "全てのWebhookを取得します。権限が必要です。",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    ],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "getWebRTCState",
+    "method": "GET",
+    "path": "/webrtc/state",
+    "summary": "WebRTC状態を取得",
+    "description": "現在のWebRTC状態を取得します。",
+    "tags": [
+      "webrtc"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 1
+  },
+  {
+    "operationId": "inactivateBot",
+    "method": "POST",
+    "path": "/bots/{botId}/actions/inactivate",
+    "summary": "BOTをインアクティベート",
+    "description": "指定したBOTを無効化します。対象のBOTの管理権限が必要です。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "letBotJoinChannel",
+    "method": "POST",
+    "path": "/bots/{botId}/actions/join",
+    "summary": "BOTをチャンネルに参加させる",
+    "description": "指定したBOTを指定したチャンネルに参加させます。\nチャンネルに参加したBOTは、そのチャンネルの各種イベントを受け取るようになります。\n対象のBOTの管理権限が必要です。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "letBotLeaveChannel",
+    "method": "POST",
+    "path": "/bots/{botId}/actions/leave",
+    "summary": "BOTをチャンネルから退出させる",
+    "description": "指定したBOTを指定したチャンネルから退出させます。\n対象のBOTの管理権限が必要です。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "linkExternalAccount",
+    "method": "POST",
+    "path": "/users/me/ex-accounts/link",
+    "summary": "外部ログインアカウントを紐付ける",
+    "description": "自分に外部ログインアカウントを紐付けます。\n指定した`providerName`がサーバー側で有効である必要があります。\nリクエストが受理された場合、外部サービスの認証画面にリダイレクトされ、認証される必要があります。",
+    "tags": [
+      "authentication",
+      "me"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "302",
+      "400"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "liveKitWebhook",
+    "method": "POST",
+    "path": "/qall/webhook",
+    "summary": "LiveKit Webhook受信",
+    "description": "LiveKit側で設定したWebhookから呼び出されるエンドポイントです。   参加者の入室・退出などのイベントを受け取り、サーバ内で処理を行います。\n",
+    "tags": [
+      "qall"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": true,
+      "contentTypes": [
+        "application/webhook+json"
+      ]
+    },
+    "responseStatus": [
+      "200",
+      "400",
+      "500"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "login",
+    "method": "POST",
+    "path": "/login",
+    "summary": "ログイン",
+    "description": "ログインします。",
+    "tags": [
+      "authentication"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "302",
+      "400",
+      "401",
+      "403"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "logout",
+    "method": "POST",
+    "path": "/logout",
+    "summary": "ログアウト",
+    "description": "ログアウトします。",
+    "tags": [
+      "authentication"
+    ],
+    "parameters": [
+      {
+        "name": "all",
+        "in": "query",
+        "required": false,
+        "description": "全てのセッションでログアウトするかどうか",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    ],
+    "responseStatus": [
+      "204",
+      "302"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "postDirectMessage",
+    "method": "POST",
+    "path": "/users/{userId}/messages",
+    "summary": "ダイレクトメッセージを送信",
+    "description": "指定したユーザーにダイレクトメッセージを送信します。",
+    "tags": [
+      "message",
+      "user"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "postFile",
+    "method": "POST",
+    "path": "/files",
+    "summary": "ファイルをアップロード",
+    "description": "指定したチャンネルにファイルをアップロードします。\nアーカイブされているチャンネルにはアップロード出来ません。",
+    "tags": [
+      "file"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "multipart/form-data"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400",
+      "411",
+      "413"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "postMessage",
+    "method": "POST",
+    "path": "/channels/{channelId}/messages",
+    "summary": "チャンネルにメッセージを投稿",
+    "description": "指定したチャンネルにメッセージを投稿します。\nembedをtrueに指定すると、メッセージ埋め込みが自動で行われます。\nアーカイブされているチャンネルに投稿することはできません。",
+    "tags": [
+      "message",
+      "channel"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "201",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "postOAuth2Authorize",
+    "method": "POST",
+    "path": "/oauth2/authorize",
+    "summary": "OAuth2 認可エンドポイント",
+    "description": "OAuth2 認可エンドポイント",
+    "tags": [
+      "oauth2"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": true,
+      "contentTypes": [
+        "application/x-www-form-urlencoded"
+      ]
+    },
+    "responseStatus": [
+      "302",
+      "400",
+      "403"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "postOAuth2AuthorizeDecide",
+    "method": "POST",
+    "path": "/oauth2/authorize/decide",
+    "summary": "OAuth2 認可承諾API",
+    "description": "OAuth2 認可承諾",
+    "tags": [
+      "oauth2"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": true,
+      "contentTypes": [
+        "application/x-www-form-urlencoded"
+      ]
+    },
+    "responseStatus": [
+      "302",
+      "400",
+      "403"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "postOAuth2Token",
+    "method": "POST",
+    "path": "/oauth2/token",
+    "summary": "OAuth2 トークンエンドポイント",
+    "description": "OAuth2 トークンエンドポイント",
+    "tags": [
+      "oauth2"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": true,
+      "contentTypes": [
+        "application/x-www-form-urlencoded"
+      ]
+    },
+    "responseStatus": [
+      "200",
+      "400",
+      "403"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "postSoundboard",
+    "method": "POST",
+    "path": "/qall/soundboard",
+    "summary": "サウンドボード用の短い音声ファイルをアップロード",
+    "description": "15秒程度の短い音声ファイルを multipart/form-data で送信し、S3(互換ストレージ)にアップロードします。   クライアントは「soundName」というフィールドを送信し、それをDBに保存して関連付けを行います。   また、サーバ側で soundId を自動生成し、S3のファイル名に使用します。\n",
+    "tags": [
+      "qall"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": true,
+      "contentTypes": [
+        "multipart/form-data"
+      ]
+    },
+    "responseStatus": [
+      "200",
+      "400",
+      "500"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "postSoundboardPlay",
+    "method": "POST",
+    "path": "/qall/soundboard/play",
+    "summary": "アップロード済み音声を LiveKit ルームで再生",
+    "description": "S3上にある音声ファイルの署名付きURLを生成し、   Ingressを介して指定ルームに音声を流します。     該当ルームに参加しているユーザであれば再生可能とします。\n",
+    "tags": [
+      "qall"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": true,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "200",
+      "400",
+      "401",
+      "500"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "postWebhook",
+    "method": "POST",
+    "path": "/webhooks/{webhookId}",
+    "summary": "Webhookを送信",
+    "description": "Webhookにメッセージを投稿します。\nsecureなウェブフックに対しては`X-TRAQ-Signature`ヘッダーが必須です。\nアーカイブされているチャンネルには投稿できません。",
+    "tags": [
+      "webhook"
+    ],
+    "parameters": [
+      {
+        "name": "X-TRAQ-Signature",
+        "in": "header",
+        "required": false,
+        "description": "リクエストボディシグネチャ(Secretが設定されている場合は必須)",
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "X-TRAQ-Channel-Id",
+        "in": "header",
+        "required": false,
+        "description": "投稿先のチャンネルID(変更する場合)",
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "embed",
+        "in": "query",
+        "required": false,
+        "description": "メンション・チャンネルリンクを自動埋め込みする場合に1を指定する",
+        "schema": {
+          "type": "integer",
+          "default": 0
+        }
+      }
+    ],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "text/plain"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "postWebRTCAuthenticate",
+    "method": "POST",
+    "path": "/webrtc/authenticate",
+    "summary": "Skyway用認証API",
+    "description": "Skyway WebRTC用の認証API",
+    "tags": [
+      "webrtc"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "200",
+      "400",
+      "503"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "readChannel",
+    "method": "DELETE",
+    "path": "/users/me/unread/{channelId}",
+    "summary": "チャンネルを既読にする",
+    "description": "自分が未読のチャンネルを既読にします。",
+    "tags": [
+      "me",
+      "notification"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "registerFCMDevice",
+    "method": "POST",
+    "path": "/users/me/fcm-device",
+    "summary": "FCMデバイスを登録",
+    "description": "自身のFCMデバイスを登録します。",
+    "tags": [
+      "me",
+      "notification"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "reissueBot",
+    "method": "POST",
+    "path": "/bots/{botId}/actions/reissue",
+    "summary": "BOTのトークンを再発行",
+    "description": "指定したBOTの現在の各種トークンを無効化し、再発行を行います。\n対象のBOTの管理権限が必要です。",
+    "tags": [
+      "bot"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "200",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "removeMessageStamp",
+    "method": "DELETE",
+    "path": "/messages/{messageId}/stamps/{stampId}",
+    "summary": "スタンプを消す",
+    "description": "指定したメッセージから指定した自身が押したスタンプを削除します。",
+    "tags": [
+      "message",
+      "stamp"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "removeMyStar",
+    "method": "DELETE",
+    "path": "/users/me/stars/{channelId}",
+    "summary": "チャンネルをスターから削除します",
+    "description": "既にスターから削除されているチャンネルを指定した場合は204を返します。",
+    "tags": [
+      "me",
+      "star"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "removeMyUserTag",
+    "method": "DELETE",
+    "path": "/users/me/tags/{tagId}",
+    "summary": "自分からタグを削除します",
+    "description": "既に存在しないタグを削除しようとした場合は204を返します。",
+    "tags": [
+      "user tag",
+      "me"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "removePin",
+    "method": "DELETE",
+    "path": "/messages/{messageId}/pin",
+    "summary": "ピン留めを外す",
+    "description": "指定したメッセージのピン留めを外します。",
+    "tags": [
+      "message",
+      "pin"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "400",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "removeUserGroupAdmin",
+    "method": "DELETE",
+    "path": "/groups/{groupId}/admins/{userId}",
+    "summary": "グループ管理者を削除",
+    "description": "指定したユーザーグループから指定した管理者を削除します。\n対象のユーザーグループの管理者権限が必要です。\nグループから管理者が存在しなくなる場合は400エラーを返します。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "removeUserGroupMember",
+    "method": "DELETE",
+    "path": "/groups/{groupId}/members/{userId}",
+    "summary": "グループメンバーを削除",
+    "description": "指定したユーザーグループから指定したユーザーを削除します。\n既にグループから削除されているメンバーを指定した場合は204を返します。\n対象のユーザーグループの管理者権限が必要です。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "removeUserGroupMembers",
+    "method": "DELETE",
+    "path": "/groups/{groupId}/members",
+    "summary": "グループメンバーを一括削除",
+    "description": "指定したグループから全てのメンバーを削除します。\n対象のユーザーグループの管理者権限が必要です。",
+    "tags": [
+      "group"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "removeUserTag",
+    "method": "DELETE",
+    "path": "/users/{userId}/tags/{tagId}",
+    "summary": "ユーザーからタグを削除します",
+    "description": "既に存在しないタグを削除しようとした場合は204を返します。",
+    "tags": [
+      "user",
+      "user tag"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "403",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "revokeClientTokens",
+    "method": "DELETE",
+    "path": "/clients/{clientId}/tokens",
+    "summary": "OAuthクライアントのトークンを削除",
+    "description": "自分が許可している指定したOAuthクライアントのアクセストークンを全てRevokeします。",
+    "tags": [
+      "oauth2"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "revokeMySession",
+    "method": "DELETE",
+    "path": "/users/me/sessions/{sessionId}",
+    "summary": "セッションを無効化",
+    "description": "指定した自分のセッションを無効化(ログアウト)します。\n既に存在しない・無効化されているセッションを指定した場合も`204`を返します。",
+    "tags": [
+      "authentication",
+      "me"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "revokeMyToken",
+    "method": "DELETE",
+    "path": "/users/me/tokens/{tokenId}",
+    "summary": "トークンの認可を取り消す",
+    "description": "自分の指定したトークンの認可を取り消します。",
+    "tags": [
+      "oauth2",
+      "me"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "revokeOAuth2Token",
+    "method": "POST",
+    "path": "/oauth2/revoke",
+    "summary": "OAuth2 トークン無効化エンドポイント",
+    "description": "OAuth2 トークン無効化エンドポイント",
+    "tags": [
+      "oauth2"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": true,
+      "contentTypes": [
+        "application/x-www-form-urlencoded"
+      ]
+    },
+    "responseStatus": [
+      "200"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "searchMessages",
+    "method": "GET",
+    "path": "/messages",
+    "summary": "メッセージを検索",
+    "description": "メッセージを検索します。",
+    "tags": [
+      "message"
+    ],
+    "parameters": [
+      {
+        "name": "word",
+        "in": "query",
+        "required": false,
+        "description": "検索ワード\nSimple-Query-String-Syntaxをパースして検索します\n",
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "description": "投稿日時が指定日時より後",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      {
+        "name": "before",
+        "in": "query",
+        "required": false,
+        "description": "投稿日時が指定日時より前",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      {
+        "name": "in",
+        "in": "query",
+        "required": false,
+        "description": "メッセージが投稿されたチャンネル",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "to",
+        "in": "query",
+        "required": false,
+        "description": "メンションされたユーザー",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      {
+        "name": "from",
+        "in": "query",
+        "required": false,
+        "description": "メッセージを投稿したユーザー",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      {
+        "name": "citation",
+        "in": "query",
+        "required": false,
+        "description": "引用しているメッセージ",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "bot",
+        "in": "query",
+        "required": false,
+        "description": "メッセージを投稿したユーザーがBotかどうか",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "hasURL",
+        "in": "query",
+        "required": false,
+        "description": "メッセージがURLを含むか",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "hasAttachments",
+        "in": "query",
+        "required": false,
+        "description": "メッセージが添付ファイルを含むか",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "hasImage",
+        "in": "query",
+        "required": false,
+        "description": "メッセージが画像を含むか",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "hasVideo",
+        "in": "query",
+        "required": false,
+        "description": "メッセージが動画を含むか",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "hasAudio",
+        "in": "query",
+        "required": false,
+        "description": "メッセージが音声ファイルを含むか",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "description": "検索結果から取得するメッセージの最大件数",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      {
+        "name": "offset",
+        "in": "query",
+        "required": false,
+        "description": "検索結果から取得するメッセージのオフセット",
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9900
+        }
+      },
+      {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "description": "ソート順 (作成日時が新しい `createdAt`, 作成日時が古い `-createdAt`, 更新日時が新しい `updatedAt`, 更新日時が古い `-updatedAt`)",
+        "schema": {
+          "type": "string",
+          "default": "-createdAt",
+          "enum": [
+            "createdAt",
+            "-createdAt",
+            "updatedAt",
+            "-updatedAt"
+          ]
+        }
+      }
+    ],
+    "responseStatus": [
+      "200",
+      "400",
+      "503"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "setChannelSubscribeLevel",
+    "method": "PUT",
+    "path": "/users/me/subscriptions/{channelId}",
+    "summary": "チャンネル購読レベルを設定",
+    "description": "自身の指定したチャンネルの購読レベルを設定します。",
+    "tags": [
+      "me",
+      "notification"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "setChannelSubscribers",
+    "method": "PUT",
+    "path": "/channels/{channelId}/subscribers",
+    "summary": "チャンネルの通知購読者を設定",
+    "description": "指定したチャンネルの通知購読者を設定します。\nリクエストに含めなかったユーザーの通知購読状態はオフになります。\nまた、存在しないユーザーを指定した場合は無視されます。",
+    "tags": [
+      "channel",
+      "notification"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400",
+      "403",
+      "404"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "unclipMessage",
+    "method": "DELETE",
+    "path": "/clip-folders/{folderId}/messages/{messageId}",
+    "summary": "メッセージをクリップフォルダから除外",
+    "description": "指定したフォルダから指定したメッセージのクリップを除外します。\n既に外されているメッセージを指定した場合は204を返します。",
+    "tags": [
+      "clip"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "204",
+      "404"
+    ],
+    "cost": 3
+  },
+  {
+    "operationId": "unlinkExternalAccount",
+    "method": "POST",
+    "path": "/users/me/ex-accounts/unlink",
+    "summary": "外部ログインアカウントの紐付けを解除",
+    "description": "自分に紐付けられている外部ログインアカウントの紐付けを解除します。",
+    "tags": [
+      "authentication",
+      "me"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": false,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "204",
+      "400"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "updateRoomMetadata",
+    "method": "PATCH",
+    "path": "/qall/rooms/{roomId}/metadata",
+    "summary": "ルームのメタデータを更新",
+    "description": "ルームのメタデータを更新します。\n",
+    "tags": [
+      "qall"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "required": true,
+      "contentTypes": [
+        "application/json"
+      ]
+    },
+    "responseStatus": [
+      "200",
+      "400",
+      "401",
+      "500"
+    ],
+    "cost": 2
+  },
+  {
+    "operationId": "ws",
+    "method": "GET",
+    "path": "/ws",
+    "summary": "WebSocket通知ストリームに接続します",
+    "description": "# WebSocketプロトコル\n## 送信\n`コマンド:引数1:引数2:...`のような形式のTextMessageをサーバーに送信することで、このWebSocketセッションに対する設定が実行できる。\n### `viewstate`コマンド\nこのWebSocketセッションが見ているチャンネル(イベントを受け取るチャンネル)を設定する。\n現時点では1つのセッションに対して1つのチャンネルしか設定できない。\n\n`viewstate:{チャンネルID}:{閲覧状態}`\n+ チャンネルID: 対象のチャンネルID\n+ 閲覧状態: `none`, `monitoring`, `editing`\n\n最初の`viewstate`コマンドを送る前、または`viewstate:null`, `viewstate:`を送信した後は、このセッションはどこのチャンネルも見ていないことになる。\n\n### `rtcstate`コマンド\n自分のWebRTC状態を変更する。\n他のコネクションが既に状態を保持している場合、変更することができません。\n\n`rtcstate:{チャンネルID}:({状態}:{セッションID})*`\n\nコネクションが切断された場合、自分のWebRTC状態はリセットされます。\n\n### `timeline_streaming`コマンド\n全てのパブリックチャンネルの`MESSAGE_CREATED`イベントを受け取るかどうかを設定する。\n初期状態は`off`です。\n\n`timeline_streaming:(on|off|true|false)`\n\n## 受信\nTextMessageとして各種イベントが`type`と`body`を持つJSONとして非同期に送られます。\n\n例:\n```json\n{\"type\":\"USER_ONLINE\",\"body\":{\"id\":\"7dd8e07f-7f5d-4331-9176-b56a4299768b\"}}\n```\n\n## イベント一覧\n\n### `USER_JOINED`\nユーザーが新規登録された。\n\n対象: 全員\n\n+ `id`: 登録されたユーザーのId\n\n### `USER_UPDATED`\nユーザーの情報が更新された。\n\n対象: 全員\n\n+ `id`: 情報が更新されたユーザーのId\n\n### `USER_TAGS_UPDATED`\nユーザーのタグが更新された。\n\n対象: 全員\n\n+ `id`: タグが更新されたユーザーのId\n+ `tag_id`: 更新されたタグのId\n\n### `USER_ICON_UPDATED`\nユーザーのアイコンが更新された。\n\n対象: 全員\n\n+ `id`: アイコンが更新されたユーザーのId\n\n### `USER_WEBRTC_STATE_CHANGED`\nユーザーのWebRTCの状態が変化した\n\n対象: 全員\n\n+ `user_id`: 変更があったユーザーのId\n+ `channel_id`: ユーザーの変更後の接続チャンネルのId\n+ `sessions`: ユーザーの変更後の状態(配列)\n  + `state`: 状態\n  + `sessionId`: セッションID\n\n### `USER_VIEWSTATE_CHANGED`\nユーザーのチャンネルの閲覧状態が変化した\n\n対象: 変化したWSセッションを含めた、該当ユーザーのWSセッション全て\n\n+ `view_states`: 変化したWSセッションを含めた、該当ユーザーの変更後の状態(配列)\n  + `key`: WSセッションの識別子\n  + `channel_id`: 閲覧しているチャンネルId\n  + `state`: 閲覧状態\n\n### `USER_ONLINE`\nユーザーがオンラインになった。\n\n対象: 全員\n\n+ `id`: オンラインになったユーザーのId\n\n### `USER_OFFLINE`\nユーザーがオフラインになった。\n\n対象: 全員\n\n+ `id`: オフラインになったユーザーのId\n\n### `USER_GROUP_CREATED`\nユーザーグループが作成された\n\n対象: 全員\n\n+ `id`: 作成されたユーザーグループのId\n\n### `USER_GROUP_UPDATED`\nユーザーグループが更新された\n\n対象: 全員\n\n+ `id`: 作成されたユーザーグループのId\n\n### `USER_GROUP_DELETED`\nユーザーグループが削除された\n\n対象: 全員\n\n+ `id`: 削除されたユーザーグループのId\n\n### `CHANNEL_CREATED`\nチャンネルが新規作成された。\n\n対象: 該当チャンネルを閲覧可能な全員\n\n+ `id`: 作成されたチャンネルのId\n+ `dm_user_id`: (DMの場合のみ) DM相手のユーザーId\n\n### `CHANNEL_UPDATED`\nチャンネルの情報が変更された。\n\n対象: 該当チャンネルを閲覧可能な全員\n\n+ `id`: 変更があったチャンネルのId\n+ `dm_user_id`: (DMの場合のみ) DM相手のユーザーId\n\n### `CHANNEL_DELETED`\nチャンネルが削除された。\n\n対象: 該当チャンネルを閲覧可能な全員\n\n+ `id`: 削除されたチャンネルのId\n+ `dm_user_id`: (DMの場合のみ) DM相手のユーザーId\n\n### `CHANNEL_STARED`\n自分がチャンネルをスターした。\n\n対象: 自分\n\n+ `id`: スターしたチャンネルのId\n\n### `CHANNEL_UNSTARED`\n自分がチャンネルのスターを解除した。\n\n対象: 自分\n\n+ `id`: スターしたチャンネルのId\n\n### `CHANNEL_VIEWERS_CHANGED`\nチャンネルの閲覧者が変化した。\n\n対象: 該当チャンネルを閲覧しているユーザー\n\n+ `id`: 変化したチャンネルのId\n+ `viewers`: 変化後の閲覧者(配列)\n  + `userId`: ユーザーId\n  + `state`: 閲覧状態\n  + `updatedAt`: 閲覧状態の更新日時\n\n### `CHANNEL_SUBSCRIBERS_CHANGED`\nチャンネルの購読者が変化した。\n\n対象: 該当チャンネルを閲覧しているユーザー\n\n+ `id`: 変化したチャンネルのId\n\n### `MESSAGE_CREATED`\nメッセージが投稿された。\n\n対象: 投稿チャンネルを閲覧しているユーザー・投稿チャンネルに通知をつけているユーザー・メンションを受けたユーザー\n\n+ `id`: 投稿されたメッセージのId\n+ `is_citing`: 投稿されたメッセージがWebSocketを接続しているユーザーの投稿を引用しているかどうか\n\n### `MESSAGE_UPDATED`\nメッセージが更新された。\n\n対象: 投稿チャンネルを閲覧しているユーザー\n\n+ `id`: 更新されたメッセージのId\n\n### `MESSAGE_DELETED`\nメッセージが削除された。\n\n対象: 投稿チャンネルを閲覧しているユーザー\n\n+ `id`: 削除されたメッセージのId\n\n### `MESSAGE_STAMPED`\nメッセージにスタンプが押された。\n\n対象: 投稿チャンネルを閲覧しているユーザー\n\n+ `message_id`: メッセージId\n+ `user_id`: スタンプを押したユーザーのId\n+ `stamp_id`: スタンプのId\n+ `count`: そのユーザーが押した数\n+ `created_at`: そのユーザーがそのスタンプをそのメッセージに最初に押した日時\n\n### `MESSAGE_UNSTAMPED`\nメッセージからスタンプが外された。\n\n対象: 投稿チャンネルを閲覧しているユーザー\n\n+ `message_id`: メッセージId\n+ `user_id`: スタンプを押したユーザーのId\n+ `stamp_id`: スタンプのId\n\n### `MESSAGE_PINNED`\nメッセージがピン留めされた。\n\n対象: 投稿チャンネルを閲覧しているユーザー\n\n+ `message_id`: ピンされたメッセージのID\n+ `channel_id`: ピンされたメッセージのチャンネルID\n\n### `MESSAGE_UNPINNED`\nピン留めされたメッセージのピンが外された。\n\n対象: 投稿チャンネルを閲覧しているユーザー\n\n+ `message_id`: ピンが外されたメッセージのID\n+ `channel_id`: ピンが外されたメッセージのチャンネルID\n\n### `MESSAGE_READ`\n自分があるチャンネルのメッセージを読んだ。\n\n対象: 自分\n\n+ `id`: 読んだチャンネルId\n\n### `STAMP_CREATED`\nスタンプが新しく追加された。\n\n対象: 全員\n\n+ `id`: 作成されたスタンプのId\n\n### `STAMP_UPDATED`\nスタンプが修正された。\n\n対象: 全員\n\n+ `id`: 修正されたスタンプのId\n\n### `STAMP_DELETED`\nスタンプが削除された。\n\n対象: 全員\n\n+ `id`: 削除されたスタンプのId\n\n### `STAMP_PALETTE_CREATED`\nスタンプパレットが新しく追加された。\n\n対象: 自分\n\n+ `id`: 作成されたスタンプパレットのId\n\n### `STAMP_PALETTE_UPDATED`\nスタンプパレットが修正された。\n\n対象: 自分\n\n+ `id`: 修正されたスタンプパレットのId\n\n### `STAMP_PALETTE_DELETED`\nスタンプパレットが削除された。\n\n対象: 自分\n\n+ `id`: 削除されたスタンプパレットのId\n\n### `CLIP_FOLDER_CREATED`\nクリップフォルダーが作成された。\n\n対象：自分\n\n+ `id`: 作成されたクリップフォルダーのId\n\n### `CLIP_FOLDER_UPDATED`\nクリップフォルダーが修正された。\n\n対象: 自分\n\n+ `id`: 更新されたクリップフォルダーのId\n\n### `CLIP_FOLDER_DELETED`\nクリップフォルダーが削除された。\n\n対象: 自分\n\n+ `id`: 削除されたクリップフォルダーのId\n\n### `CLIP_FOLDER_MESSAGE_DELETED`\nクリップフォルダーからメッセージが除外された。\n\n対象: 自分\n\n+ `folder_id`: メッセージが除外されたクリップフォルダーのId\n+ `message_id`: クリップフォルダーから除外されたメッセージのId\n\n### `CLIP_FOLDER_MESSAGE_ADDED`\nクリップフォルダーにメッセージが追加された。\n\n対象: 自分\n\n+ `folder_id`: メッセージが追加されたクリップフォルダーのId\n+ `message_id`: クリップフォルダーに追加されたメッセージのId\n\n### `QALL_ROOM_STATE_CHANGED`\nルーム状態が変更された。\n\n対象: 全員\n\n+ `room_id`: 変更されたルームのId\n+ `state`: 変更後のルーム状態\n  + `roomId`: ルームのID\n  + `participants`: ルーム内の参加者(配列)\n    + `identity`: ユーザーID_RandomUUID\n    + `name`: 表示名\n    + `joinedAt`: 参加した時刻\n    + `attributes`: ユーザーに関連付けられたカスタム属性\n    + `canPublish`: 発言権限\n  + `isWebinar`: ウェビナールームかどうか\n  + `metadata`: ルームに関連付けられたカスタム属性\n\n### `QALL_SOUNDBOARD_ITEM_CREATED`\nサウンドボードアイテムが作成された。\n\n対象: 全員\n\n+ `sound_id`: 作成されたサウンドのId\n+ `name`: サウンド名\n+ `creator_id`: 作成者のId\n\n### `QALL_SOUNDBOARD_ITEM_DELETED`\nサウンドボードアイテムが削除された。\n\n対象: 全員\n\n+ `sound_id`: 削除されたサウンドのId",
+    "tags": [
+      "notification"
+    ],
+    "parameters": [],
+    "responseStatus": [
+      "101"
+    ],
+    "cost": 1
+  }
+]
