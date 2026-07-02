@@ -14,7 +14,7 @@ export const useOAuthCallback = ({ setToken, pushToast }: Options) => {
     if (callback.kind === "none") return;
     if (callback.kind === "error") {
       pushToast(callback.description ?? callback.error, "error");
-      window.history.replaceState(null, "", `${window.location.pathname}${window.location.hash}`);
+      window.history.replaceState(null, "", `/${window.location.hash}`);
       return;
     }
 
@@ -25,7 +25,7 @@ export const useOAuthCallback = ({ setToken, pushToast }: Options) => {
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : String(error), "error"))
       .finally(() => {
-        window.history.replaceState(null, "", `${window.location.pathname}${window.location.hash}`);
+        window.history.replaceState(null, "", `/${window.location.hash}`);
       });
   }, [pushToast, setToken]);
 };
