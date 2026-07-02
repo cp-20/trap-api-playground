@@ -1,4 +1,4 @@
-export async function formatJavaScript(code: string): Promise<string> {
+export const formatJavaScript = async (code: string): Promise<string> => {
   const [{ default: prettier }, babelPlugin, estreePlugin] = await Promise.all([
     import("prettier/standalone"),
     import("prettier/plugins/typescript"),
@@ -11,4 +11,4 @@ export async function formatJavaScript(code: string): Promise<string> {
     semi: false,
     trailingComma: "all",
   });
-}
+};

@@ -1,8 +1,9 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
+import openapiTS, { astToString } from "openapi-typescript";
 import { parse } from "yaml";
 import { OPENAPI_URL } from "../src/config";
-import { extractOperations } from "../src/api/openapi";
+import { extractOperations } from "../src/data/openapi";
 
 type SchemaObject = Record<string, unknown>;
 type OpenApiDocument = {
@@ -14,35 +15,25 @@ type OpenApiDocument = {
 };
 
 const operationsOutput = resolve("src/generated/traq-operations.json");
+const openApiTypesOutput = resolve("src/generated/traq-openapi.ts");
 const dtsOutput = resolve("src/generated/traq-api-types.d.ts");
 const textOutput = resolve("src/generated/traq-api-types.ts");
-const methods = new Set([
-  "get",
-  "post",
-  "put",
-  "patch",
-  "delete",
-  "head",
-  "options",
-]);
+const methods = new Set(["get", "post", "put", "patch", "delete", "head", "options"]);
 
-function typeName(name: string): string {
+const typeName = (name: string): string => {
   const cleaned = name.replace(/[^A-Za-z0-9_$]/g, "_");
   return /^[A-Za-z_$]/.test(cleaned) ? cleaned : `_${cleaned}`;
-}
+};
 
-function propertyName(name: string): string {
+const propertyName = (name: string): string => {
   return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(name) ? name : JSON.stringify(name);
-}
+};
 
-function literal(value: unknown): string {
+const literal = (value: unknown): string => {
   return JSON.stringify(value);
-}
+};
 
-function resolveRef(
-  ref: string,
-  document: OpenApiDocument,
-): SchemaObject | undefined {
+const resolveRef = (ref: string, document: OpenApiDocument): SchemaObject | undefined => {
   const schemaPrefix = "#/components/schemas/";
   const parameterPrefix = "#/components/parameters/";
   if (ref.startsWith(schemaPrefix))
@@ -51,13 +42,13 @@ function resolveRef(
     return document.components?.parameters?.[ref.slice(parameterPrefix.length)];
   }
   return undefined;
-}
+};
 
-function schemaToTs(
+const schemaToTs = (
   schema: unknown,
   document: OpenApiDocument,
   seen = new Set<unknown>(),
-): string {
+): string => {
   if (!schema || typeof schema !== "object") return "unknown";
   if (seen.has(schema)) return "unknown";
   seen.add(schema);
@@ -83,8 +74,7 @@ function schemaToTs(
   }
 
   const type = object.type;
-  if (type === "array")
-    return `${schemaToTs(object.items, document, seen)}[]${nullable}`;
+  if (type === "array") return `${schemaToTs(object.items, document, seen)}[]${nullable}`;
   if (type === "integer" || type === "number") return `number${nullable}`;
   if (type === "boolean") return `boolean${nullable}`;
   if (type === "string") {
@@ -94,9 +84,7 @@ function schemaToTs(
 
   if (type === "object" || object.properties) {
     const properties = object.properties as Record<string, unknown> | undefined;
-    const required = new Set(
-      Array.isArray(object.required) ? object.required.map(String) : [],
-    );
+    const required = new Set(Array.isArray(object.required) ? object.required.map(String) : []);
     const lines = Object.entries(properties ?? {}).map(([key, value]) => {
       return `  ${propertyName(key)}${required.has(key) ? "" : "?"}: ${schemaToTs(
         value,
@@ -105,10 +93,7 @@ function schemaToTs(
       )};`;
     });
 
-    if (
-      object.additionalProperties &&
-      typeof object.additionalProperties === "object"
-    ) {
+    if (object.additionalProperties && typeof object.additionalProperties === "object") {
       lines.push(
         `  [key: string]: ${schemaToTs(object.additionalProperties, document, new Set(seen))};`,
       );
@@ -119,18 +104,15 @@ function schemaToTs(
     return `{\n${lines.join("\n")}\n}${nullable}`;
   }
 
-  const resolved =
-    typeof object.$ref === "string"
-      ? resolveRef(object.$ref, document)
-      : undefined;
+  const resolved = typeof object.$ref === "string" ? resolveRef(object.$ref, document) : undefined;
   return resolved ? schemaToTs(resolved, document, seen) : `unknown${nullable}`;
-}
+};
 
-function refOrSchemaToTs(value: unknown, document: OpenApiDocument): string {
+const refOrSchemaToTs = (value: unknown, document: OpenApiDocument): string => {
   return schemaToTs(value, document);
-}
+};
 
-function contentSchema(content: unknown): unknown {
+const contentSchema = (content: unknown): unknown => {
   if (!content || typeof content !== "object") return undefined;
   const record = content as Record<string, { schema?: unknown }>;
   return (
@@ -139,28 +121,22 @@ function contentSchema(content: unknown): unknown {
     record["application/x-www-form-urlencoded"]?.schema ??
     Object.values(record)[0]?.schema
   );
-}
+};
 
-function parameterList(...groups: unknown[]): SchemaObject[] {
+const parameterList = (...groups: unknown[]): SchemaObject[] => {
   return groups
     .flatMap((group) => (Array.isArray(group) ? group : []))
     .filter((item): item is SchemaObject => !!item && typeof item === "object");
-}
+};
 
-function resolveParameter(
-  parameter: SchemaObject,
-  document: OpenApiDocument,
-): SchemaObject {
+const resolveParameter = (parameter: SchemaObject, document: OpenApiDocument): SchemaObject => {
   if (typeof parameter.$ref === "string") {
     return resolveRef(parameter.$ref, document) ?? parameter;
   }
   return parameter;
-}
+};
 
-function pathParametersFromTemplate(
-  path: string,
-  parameters: SchemaObject[],
-): SchemaObject[] {
+const pathParametersFromTemplate = (path: string, parameters: SchemaObject[]): SchemaObject[] => {
   const existing = new Set(
     parameters
       .filter((parameter) => parameter.in === "path")
@@ -175,13 +151,13 @@ function pathParametersFromTemplate(
       required: true,
       schema: { type: "string" },
     }));
-}
+};
 
-function objectTypeFromParameters(
+const objectTypeFromParameters = (
   parameters: SchemaObject[],
   location: "path" | "query",
   document: OpenApiDocument,
-): { type: string; required: boolean } | null {
+): { type: string; required: boolean } | null => {
   const selected = parameters.filter((parameter) => parameter.in === location);
   if (!selected.length) return null;
   const lines = selected.map((parameter) => {
@@ -196,14 +172,10 @@ function objectTypeFromParameters(
     type: `{\n${lines.join("\n")}\n  }`,
     required: selected.some((parameter) => parameter.required === true),
   };
-}
+};
 
-function responseType(
-  operation: SchemaObject,
-  document: OpenApiDocument,
-): string {
-  const responses = operation.responses as
-    Record<string, SchemaObject> | undefined;
+const responseType = (operation: SchemaObject, document: OpenApiDocument): string => {
+  const responses = operation.responses as Record<string, SchemaObject> | undefined;
   if (!responses) return "unknown";
   const entry =
     responses["200"] ??
@@ -214,15 +186,15 @@ function responseType(
     Object.values(responses)[0];
   const schema = contentSchema(entry?.content);
   return entry && !schema ? "null" : refOrSchemaToTs(schema, document);
-}
+};
 
-function requestBodyType(
+const requestBodyType = (
   operation: SchemaObject,
   document: OpenApiDocument,
 ): {
   type: string;
   required: boolean;
-} | null {
+} | null => {
   const requestBody = operation.requestBody as SchemaObject | undefined;
   if (!requestBody) return null;
   const schema = contentSchema(requestBody.content);
@@ -231,14 +203,12 @@ function requestBodyType(
     type: refOrSchemaToTs(schema, document),
     required: requestBody.required === true,
   };
-}
+};
 
-function buildApiDeclaration(document: OpenApiDocument): string {
-  const schemaLines = Object.entries(document.components?.schemas ?? {}).map(
-    ([name, schema]) => {
-      return `  export type ${typeName(name)} = ${schemaToTs(schema, document)};`;
-    },
-  );
+const buildApiDeclaration = (document: OpenApiDocument): string => {
+  const schemaLines = Object.entries(document.components?.schemas ?? {}).map(([name, schema]) => {
+    return `  export type ${typeName(name)} = ${schemaToTs(schema, document)};`;
+  });
 
   const apiLines: string[] = [];
   for (const [path, pathItem] of Object.entries(document.paths ?? {})) {
@@ -249,37 +219,23 @@ function buildApiDeclaration(document: OpenApiDocument): string {
       const operationId = operation.operationId;
       if (typeof operationId !== "string") continue;
 
-      const parameters = parameterList(
-        commonParameters,
-        operation.parameters,
-      ).map((parameter) => resolveParameter(parameter, document));
+      const parameters = parameterList(commonParameters, operation.parameters).map((parameter) =>
+        resolveParameter(parameter, document),
+      );
       parameters.push(...pathParametersFromTemplate(path, parameters));
       const pathType = objectTypeFromParameters(parameters, "path", document);
       const queryType = objectTypeFromParameters(parameters, "query", document);
       const bodyType = requestBodyType(operation, document);
       const inputLines: string[] = [];
-      if (pathType)
-        inputLines.push(
-          `  path${pathType.required ? "" : "?"}: ${pathType.type};`,
-        );
-      if (queryType)
-        inputLines.push(
-          `  query${queryType.required ? "" : "?"}: ${queryType.type};`,
-        );
-      if (bodyType)
-        inputLines.push(
-          `  body${bodyType.required ? "" : "?"}: ${bodyType.type};`,
-        );
+      if (pathType) inputLines.push(`  path${pathType.required ? "" : "?"}: ${pathType.type};`);
+      if (queryType) inputLines.push(`  query${queryType.required ? "" : "?"}: ${queryType.type};`);
+      if (bodyType) inputLines.push(`  body${bodyType.required ? "" : "?"}: ${bodyType.type};`);
       inputLines.push("  form?: Record<string, string | Blob>;");
       const inputType = `{\n${inputLines.join("\n")}\n}`;
       const inputOptional =
-        !pathType?.required && !queryType?.required && !bodyType?.required
-          ? "?"
-          : "";
+        !pathType?.required && !queryType?.required && !bodyType?.required ? "?" : "";
       const doc = String(
-        operation.summary ??
-          operation.description ??
-          `${method.toUpperCase()} ${path}`,
+        operation.summary ?? operation.description ?? `${method.toUpperCase()} ${path}`,
       )
         .replace(/\*\//g, "* /")
         .replace(/\n/g, " ");
@@ -308,11 +264,11 @@ function buildApiDeclaration(document: OpenApiDocument): string {
     `declare const channels: TraqChannelWithFullPath[];\n` +
     `declare const groups: Traq.UserGroup[];\n`
   );
-}
+};
 
-function asTsStringModule(value: string): string {
+const asTsStringModule = (value: string): string => {
   return `export const traqApiTypes = ${JSON.stringify(value)};\n`;
-}
+};
 
 const response = await fetch(OPENAPI_URL);
 if (!response.ok) {
@@ -322,11 +278,19 @@ if (!response.ok) {
 const document = parse(await response.text()) as OpenApiDocument;
 const operations = extractOperations(document);
 const declaration = buildApiDeclaration(document);
+const openApiTypes = astToString(
+  await openapiTS(document as never, {
+    exportType: true,
+    rootTypes: false,
+  }),
+);
 
 await mkdir(dirname(operationsOutput), { recursive: true });
 await writeFile(operationsOutput, `${JSON.stringify(operations, null, 2)}\n`);
+await writeFile(openApiTypesOutput, openApiTypes);
 await writeFile(dtsOutput, declaration);
 await writeFile(textOutput, asTsStringModule(declaration));
 
 console.log(`Generated ${operations.length} operations -> ${operationsOutput}`);
+console.log(`Generated OpenAPI types -> ${openApiTypesOutput}`);
 console.log(`Generated API types -> ${dtsOutput}`);

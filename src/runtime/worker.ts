@@ -1,18 +1,9 @@
 /// <reference lib="webworker" />
 
-import { buildRequest, parseResponse, type ApiCallInput } from "../api/request";
-import type {
-  ConsoleLog,
-  MutationLog,
-  NetworkLog,
-  OperationMeta,
-  RuntimeErrorPayload,
-} from "../types";
-import type {
-  WorkerInboundMessage,
-  WorkerOutboundMessage,
-  WorkerRunMessage,
-} from "./messages";
+import { type ApiCallInput, buildRequest, type BuiltRequest, callTraqApi } from "../data/request";
+import type { OperationMeta } from "../data/types";
+import type { ConsoleLog, MutationLog, NetworkLog, RuntimeErrorPayload } from "./types";
+import type { WorkerInboundMessage, WorkerOutboundMessage, WorkerRunMessage } from "./messages";
 
 const ctx = {
   state: {} as Record<string, unknown>,
@@ -22,26 +13,25 @@ const ctx = {
 const rateState = new Map<string, number>();
 const REQUEST_TIMEOUT_MS = 30_000;
 
-function post(message: WorkerOutboundMessage): void {
+const post = (message: WorkerOutboundMessage): void => {
   self.postMessage(message);
-}
+};
 
-function safeValue(value: unknown): unknown {
+const safeValue = (value: unknown): unknown => {
   try {
     structuredClone(value);
     return value;
   } catch {
     return String(value);
   }
-}
+};
 
-function serializeError(error: unknown): RuntimeErrorPayload {
+const serializeError = (error: unknown): RuntimeErrorPayload => {
   if (error && typeof error === "object") {
     const record = error as Record<string, unknown>;
     return {
       name: typeof record.name === "string" ? record.name : "Error",
-      message:
-        typeof record.message === "string" ? record.message : String(error),
+      message: typeof record.message === "string" ? record.message : String(error),
       stack: typeof record.stack === "string" ? record.stack : undefined,
       status: typeof record.status === "number" ? record.status : undefined,
       requestId:
@@ -55,17 +45,17 @@ function serializeError(error: unknown): RuntimeErrorPayload {
     name: "Error",
     message: String(error),
   };
-}
+};
 
-function sleep(ms: number): Promise<void> {
+const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
+};
 
-async function fetchWithTimeout(
+const fetchWithTimeout = async (
   input: RequestInfo | URL,
-  init: RequestInit,
+  init: RequestInit = {},
   timeoutMs = REQUEST_TIMEOUT_MS,
-): Promise<Response> {
+): Promise<Response> => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -75,20 +65,19 @@ async function fetchWithTimeout(
     });
   } catch (error) {
     if ((error as { name?: string }).name === "AbortError") {
-      throw Object.assign(
-        new Error(`Request timed out after ${timeoutMs / 1000}s.`),
-        {
-          name: "TimeoutError",
-        },
-      );
+      throw Object.assign(new Error(`Request timed out after ${timeoutMs / 1000}s.`), {
+        name: "TimeoutError",
+      });
     }
     throw error;
   } finally {
     clearTimeout(timeout);
   }
-}
+};
 
-async function waitForRateLimit(operation: OperationMeta): Promise<void> {
+const fetchRequestWithTimeout = (request: Request): Promise<Response> => fetchWithTimeout(request);
+
+const waitForRateLimit = async (operation: OperationMeta): Promise<void> => {
   const bucket = operation.path.split("/").slice(0, 2).join("/") || "default";
   const now = Date.now();
   const next = rateState.get(bucket) ?? 0;
@@ -96,52 +85,72 @@ async function waitForRateLimit(operation: OperationMeta): Promise<void> {
   const spacing = Math.max(100, operation.cost * 160);
   rateState.set(bucket, now + wait + spacing);
   if (wait > 0) await sleep(wait);
-}
+};
 
-function isMutation(operation: OperationMeta): boolean {
+const isMutation = (operation: OperationMeta): boolean => {
   return !["GET", "HEAD", "OPTIONS"].includes(operation.method);
-}
+};
 
-function mutationInput(input: ApiCallInput): MutationLog["request"] {
+const mutationInput = (input: ApiCallInput): MutationLog["request"] => {
   return {
     path: input.path,
     query: input.query as Record<string, unknown> | undefined,
     body: safeValue(input.body),
     formKeys: input.form ? Object.keys(input.form) : undefined,
   };
-}
+};
 
-function normalizePayload(operation: OperationMeta, payload: unknown): unknown {
+const normalizePayload = (operation: OperationMeta, payload: unknown): unknown => {
   if (operation.operationId === "getChannels" && Array.isArray(payload)) {
     return { public: payload };
   }
   return payload;
-}
+};
 
-async function fetchBeforeState(request: {
-  url: string;
-  headers: Record<string, string>;
-}): Promise<unknown> {
-  const response = await fetchWithTimeout(request.url, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: request.headers.Authorization,
+const findBeforeOperation = (
+  operations: OperationMeta[],
+  operation: OperationMeta,
+): OperationMeta | null =>
+  operations.find((candidate) => candidate.path === operation.path && candidate.method === "GET") ??
+  null;
+
+const fetchBeforeState = async ({
+  operations,
+  operation,
+  apiBase,
+  accessToken,
+  input,
+}: {
+  operations: OperationMeta[];
+  operation: OperationMeta;
+  apiBase: string;
+  accessToken: string;
+  input: ApiCallInput;
+}): Promise<unknown> => {
+  const beforeOperation = findBeforeOperation(operations, operation);
+  if (!beforeOperation) return undefined;
+  const result = await callTraqApi({
+    operation: beforeOperation,
+    apiBase,
+    accessToken,
+    input: {
+      path: input.path,
+      query: input.query,
     },
+    fetchRequest: fetchRequestWithTimeout,
   });
-  if (!response.ok) return undefined;
-  return safeValue(await parseResponse(response));
-}
+  return result.response.ok ? safeValue(result.payload) : undefined;
+};
 
-function createMutationLog(
+const createMutationLog = (
   message: WorkerRunMessage,
   operation: OperationMeta,
   input: ApiCallInput,
-  request: { url: string; headers: Record<string, string> },
+  request: BuiltRequest,
   response: Response,
   payload: unknown,
   before: unknown,
-): MutationLog {
+): MutationLog => {
   const canAutoRevert =
     before !== undefined &&
     (operation.method === "PUT" || operation.method === "PATCH") &&
@@ -182,24 +191,20 @@ function createMutationLog(
           }
         : {
             status: "unavailable",
-            reason:
-              "Previous resource state could not be captured before the edit.",
+            reason: "Previous resource state could not be captured before the edit.",
           },
   };
-}
+};
 
-function createApi(
+const createApi = (
   message: WorkerRunMessage,
-): Record<string, (input?: ApiCallInput) => Promise<unknown>> {
+): Record<string, (input?: ApiCallInput) => Promise<unknown>> => {
   const entries = message.operations.map((operation) => {
     const call = async (input: ApiCallInput = {}) => {
       if (!message.accessToken) {
-        throw Object.assign(
-          new Error("Login is required before calling traQ API."),
-          {
-            name: "AuthError",
-          },
-        );
+        throw Object.assign(new Error("Login is required before calling traQ API."), {
+          name: "AuthError",
+        });
       }
 
       await waitForRateLimit(operation);
@@ -215,11 +220,17 @@ function createApi(
           name: "ReadOnlyApiError",
         });
       }
-      const request = buildRequest(operation, message.apiBase, input);
-      request.headers.Authorization = `Bearer ${message.accessToken}`;
+      const requestPreview = buildRequest(operation, message.apiBase, input);
+      requestPreview.headers.Authorization = `Bearer ${message.accessToken}`;
       const before =
         mutation && ["PUT", "PATCH", "DELETE"].includes(operation.method)
-          ? await fetchBeforeState(request).catch(() => undefined)
+          ? await fetchBeforeState({
+              operations: message.operations,
+              operation,
+              apiBase: message.apiBase,
+              accessToken: message.accessToken,
+              input,
+            }).catch(() => undefined)
           : undefined;
 
       const startedAt = Date.now();
@@ -228,36 +239,43 @@ function createApi(
         cellId: message.cellId,
         operationId: operation.operationId,
         method: operation.method,
-        url: request.url,
+        url: requestPreview.url,
         startedAt,
       };
       post({ type: "network", log: logBase });
 
       try {
-        const response = await fetchWithTimeout(request.url, request);
-        const rawPayload = await parseResponse(response);
-        const payload = response.ok
-          ? normalizePayload(operation, rawPayload)
-          : rawPayload;
-        const requestId = response.headers.get("x-request-id");
+        const result = await callTraqApi({
+          operation,
+          apiBase: message.apiBase,
+          accessToken: message.accessToken,
+          input,
+          fetchRequest: fetchRequestWithTimeout,
+        });
+        const beforeState = before;
+        const payload = result.response.ok
+          ? normalizePayload(operation, result.payload)
+          : result.payload;
+        const requestId = result.response.headers.get("x-request-id");
         post({
           type: "network",
           log: {
             ...logBase,
-            status: response.status,
-            ok: response.ok,
+            url: result.request.url,
+            status: result.response.status,
+            ok: result.response.ok,
             requestId,
             finishedAt: Date.now(),
             durationMs: Date.now() - startedAt,
           },
         });
 
-        if (!response.ok) {
+        if (!result.response.ok) {
           throw Object.assign(
-            new Error(`HTTP ${response.status} from ${operation.operationId}`),
+            new Error(`HTTP ${result.response.status} from ${operation.operationId}`),
             {
               name: "HttpError",
-              status: response.status,
+              status: result.response.status,
               requestId,
               body: payload,
             },
@@ -271,10 +289,10 @@ function createApi(
               message,
               operation,
               input,
-              request,
-              response,
+              result.request,
+              result.response,
               payload,
-              before,
+              beforeState,
             ),
           });
         }
@@ -299,11 +317,9 @@ function createApi(
   });
 
   return Object.fromEntries(entries);
-}
+};
 
-function createConsole(
-  cellId: string,
-): Pick<Console, "log" | "info" | "warn" | "error"> {
+const createConsole = (cellId: string): Pick<Console, "log" | "info" | "warn" | "error"> => {
   const emit =
     (level: ConsoleLog["level"]) =>
     (...values: unknown[]): void => {
@@ -324,9 +340,9 @@ function createConsole(
     warn: emit("warn"),
     error: emit("error"),
   };
-}
+};
 
-function findLastTopLevelStatementStart(code: string): number {
+const findLastTopLevelStatementStart = (code: string): number => {
   let depth = 0;
   let quote: "'" | '"' | "`" | null = null;
   let escaped = false;
@@ -378,15 +394,16 @@ function findLastTopLevelStatementStart(code: string): number {
       continue;
     }
     if (char === "{" || char === "(" || char === "[") depth += 1;
-    if (char === "}" || char === ")" || char === "]")
+    if (char === "}" || char === ")" || char === "]") {
       depth = Math.max(0, depth - 1);
+    }
     if ((char === ";" || char === "\n") && depth === 0) start = index + 1;
   }
 
   return start;
-}
+};
 
-function withImplicitReturn(code: string): string {
+const withImplicitReturn = (code: string): string => {
   if (/\breturn\b/.test(code)) return code;
 
   const normalized = code.replace(/[\s;]*$/u, "");
@@ -404,9 +421,9 @@ function withImplicitReturn(code: string): string {
   }
 
   return `${before}\nreturn (${last});`;
-}
+};
 
-function rewriteTopLevelDeclarations(code: string): string {
+const rewriteTopLevelDeclarations = (code: string): string => {
   let depth = 0;
   let quote: "'" | '"' | "`" | null = null;
   let escaped = false;
@@ -468,24 +485,22 @@ function rewriteTopLevelDeclarations(code: string): string {
       const previous = index > 0 ? code[index - 1] : "";
       if (match && !/[A-Za-z0-9_$]/.test(previous)) {
         output += match[2];
-        index +=
-          match[1].length + match[0].slice(match[1].length).indexOf(match[2]);
+        index += match[1].length + match[0].slice(match[1].length).indexOf(match[2]);
         continue;
       }
     }
 
     output += char;
     if (char === "{" || char === "(" || char === "[") depth += 1;
-    if (char === "}" || char === ")" || char === "]")
+    if (char === "}" || char === ")" || char === "]") {
       depth = Math.max(0, depth - 1);
+    }
   }
 
   return output;
-}
+};
 
-function createScopeProxy(
-  scope: Record<string, unknown>,
-): Record<PropertyKey, unknown> {
+const createScopeProxy = (scope: Record<string, unknown>): Record<PropertyKey, unknown> => {
   return new Proxy(scope, {
     has(_target, property) {
       return property !== Symbol.unscopables;
@@ -500,11 +515,10 @@ function createScopeProxy(
       return true;
     },
   }) as Record<PropertyKey, unknown>;
-}
+};
 
-async function runCell(message: WorkerRunMessage): Promise<void> {
-  const AsyncFunction = Object.getPrototypeOf(async function () {})
-    .constructor as new (
+const runCell = async (message: WorkerRunMessage): Promise<void> => {
+  const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor as new (
     ...args: string[]
   ) => (scope: unknown) => Promise<unknown>;
 
@@ -514,9 +528,7 @@ async function runCell(message: WorkerRunMessage): Promise<void> {
     isUuid(value: unknown): boolean {
       return (
         typeof value === "string" &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-          value,
-        )
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
       );
     },
     async pageAll<T>(
@@ -563,17 +575,14 @@ async function runCell(message: WorkerRunMessage): Promise<void> {
       error: serializeError(error),
     });
   }
-}
+};
 
-self.addEventListener(
-  "message",
-  (event: MessageEvent<WorkerInboundMessage>) => {
-    if (event.data.type === "reset") {
-      ctx.state = {};
-      ctx.scope = Object.create(null) as Record<string, unknown>;
-      rateState.clear();
-      return;
-    }
-    void runCell(event.data);
-  },
-);
+self.addEventListener("message", (event: MessageEvent<WorkerInboundMessage>) => {
+  if (event.data.type === "reset") {
+    ctx.state = {};
+    ctx.scope = Object.create(null) as Record<string, unknown>;
+    rateState.clear();
+    return;
+  }
+  void runCell(event.data);
+});

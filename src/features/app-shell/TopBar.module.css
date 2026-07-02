@@ -1,0 +1,36 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding: 7px 10px;
+  background: var(--toolbar);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+.brand {
+  display: grid;
+  min-width: 210px;
+  margin-right: auto;
+}
+
+.brand strong {
+  color: var(--text-strong);
+  font-size: 15px;
+}
+
+.brand span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 860px) {
+  .topbar {
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    width: 100%;
+  }
+}

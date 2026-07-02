@@ -1,0 +1,221 @@
+.panelResizer {
+  position: relative;
+  z-index: 4;
+  flex: none;
+  background: transparent;
+  touch-action: none;
+}
+
+.panelResizer:hover,
+.panelResizer:focus-visible {
+  background: rgba(83, 155, 245, 0.16);
+  outline: none;
+}
+
+.networkPanel {
+  min-height: 0;
+  border: 1px solid var(--border);
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0;
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.networkPanelOpen {
+  display: grid;
+  grid-template-rows: 6px auto minmax(0, 1fr);
+  height: var(--logs-panel-height, 260px);
+}
+
+.panelResizerLogs {
+  cursor: row-resize;
+  border-top: 1px solid var(--border);
+}
+
+.networkPanelHead {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: stretch;
+  border-top: 1px solid var(--border);
+  background: var(--toolbar);
+}
+
+.networkPanelToggle {
+  justify-content: flex-start;
+  border: 0;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--toolbar);
+}
+
+.networkTabs {
+  display: flex;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.networkTabs button {
+  min-height: 32px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--toolbar);
+}
+
+.networkTabs button.activeTab {
+  color: var(--accent-strong);
+  background: rgba(83, 155, 245, 0.16);
+}
+
+.networkTabs span {
+  border-radius: 2px;
+  padding: 1px 8px;
+  color: var(--text-muted);
+  background: var(--surface-inset);
+  font-size: 12px;
+}
+
+.networkPanelBody {
+  min-height: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  border-top: 1px solid var(--border);
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.networkLine {
+  display: grid;
+  grid-template-columns: 82px minmax(120px, 170px) 58px 54px 70px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.networkLine time {
+  color: var(--text-muted);
+}
+
+.networkLine span:last-child {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.statusBad {
+  color: var(--danger);
+}
+
+.editLog {
+  display: grid;
+  gap: 8px;
+}
+
+.editLog details {
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--surface-subtle);
+}
+
+.editLog summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(80px, auto) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.editLog summary span:first-child,
+.editLog summary span:nth-child(2) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editLog summary span:first-child {
+  font-weight: 650;
+}
+
+.editLog summary span:nth-child(2) {
+  color: var(--text-muted);
+}
+
+.editLogBody {
+  border-top: 1px solid var(--border);
+  padding: 10px;
+}
+
+.editLogBody dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.editLogBody dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+}
+
+.editLogBody dt {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.editLogBody dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.editLogBody :global(.json-row) {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  padding: 4px 0;
+}
+
+.editState {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.editStateOk {
+  color: var(--success);
+}
+
+.editStateBad {
+  color: var(--danger);
+}
+
+.emptyState {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+@media (max-width: 860px) {
+  .networkLine {
+    grid-template-columns: 74px minmax(120px, 1fr) 48px 42px 58px;
+  }
+
+  .networkLine span:last-child {
+    display: none;
+  }
+
+  .editLogBody div {
+    grid-template-columns: 1fr;
+  }
+
+  .editLog summary {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .editLog summary span:nth-child(2),
+  .editLog summary span:nth-child(3) {
+    display: none;
+  }
+}

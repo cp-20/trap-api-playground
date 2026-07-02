@@ -1,24 +1,24 @@
 import { deflateRaw, inflateRaw } from "pako";
-import type { NotebookSnapshot } from "./types";
+import type { NotebookSnapshot } from "./features/notebook/types";
 
 const SHARE_PREFIX = "share=";
 
-function bytesToBase64Url(bytes: Uint8Array): string {
+const bytesToBase64Url = (bytes: Uint8Array): string => {
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
+};
 
-function base64UrlToBytes(value: string): Uint8Array {
-  const padded = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(
-    Math.ceil(value.length / 4) * 4,
-    "=",
-  );
+const base64UrlToBytes = (value: string): Uint8Array => {
+  const padded = value
+    .replace(/-/g, "+")
+    .replace(/_/g, "/")
+    .padEnd(Math.ceil(value.length / 4) * 4, "=");
   const binary = atob(padded);
   return Uint8Array.from(binary, (char) => char.charCodeAt(0));
-}
+};
 
-export function encodeShare(snapshot: NotebookSnapshot): string {
+export const encodeShare = (snapshot: NotebookSnapshot): string => {
   const safeSnapshot: NotebookSnapshot = {
     ...snapshot,
     cells: snapshot.cells.map((cell) => ({
@@ -30,9 +30,9 @@ export function encodeShare(snapshot: NotebookSnapshot): string {
   };
   const encoded = new TextEncoder().encode(JSON.stringify(safeSnapshot));
   return `#${SHARE_PREFIX}${bytesToBase64Url(deflateRaw(encoded))}`;
-}
+};
 
-export function decodeShare(hash: string): NotebookSnapshot | null {
+export const decodeShare = (hash: string): NotebookSnapshot | null => {
   const value = hash.startsWith("#") ? hash.slice(1) : hash;
   if (!value.startsWith(SHARE_PREFIX)) return null;
 
@@ -52,4 +52,4 @@ export function decodeShare(hash: string): NotebookSnapshot | null {
   } catch {
     return null;
   }
-}
+};

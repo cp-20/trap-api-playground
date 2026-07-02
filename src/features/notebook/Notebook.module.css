@@ -1,0 +1,246 @@
+.cell {
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: visible;
+}
+
+.cellSelected {
+  border-color: var(--accent);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.cellToolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  padding: 5px;
+  background: var(--toolbar);
+}
+
+.cellToolbar input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  padding: 4px 7px;
+  background: transparent;
+  color: var(--text-strong);
+  font-weight: 650;
+}
+
+.cellToolbar input:focus {
+  border-color: var(--border);
+  background: var(--surface-inset);
+  outline: none;
+}
+
+.cellReadonlyButton {
+  color: var(--accent-strong);
+  background: rgba(83, 155, 245, 0.16);
+}
+
+.cellReadonlyButton:hover:not(:disabled) {
+  border-color: rgba(108, 182, 255, 0.55);
+  color: var(--accent-strong);
+  background: rgba(83, 155, 245, 0.22);
+}
+
+.cellRunning {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  border-radius: 2px;
+  padding: 0 8px;
+  color: var(--accent-strong);
+  background: rgba(83, 155, 245, 0.16);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.cellRunningDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.cellDuration {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  border-radius: 2px;
+  padding: 0 8px;
+  color: var(--text-muted);
+  background: var(--surface-inset);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.editorFrame {
+  height: 220px;
+}
+
+.cellOutput {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding: 8px;
+  background: var(--surface-subtle);
+}
+
+.inlinePanel {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 8px;
+  background: var(--surface);
+}
+
+.inlinePanel h3 {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.inlineLog {
+  display: grid;
+  gap: 6px;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.inlineLogResult {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.outputOmitted {
+  color: var(--text-muted);
+}
+
+.consoleLine {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  overflow-wrap: anywhere;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.consoleLineWarn strong {
+  color: var(--warning);
+}
+
+.consoleLineError strong {
+  color: var(--danger);
+}
+
+.consoleLine span {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.consoleLineRuntimeWarning {
+  border: 1px solid rgba(198, 144, 38, 0.36);
+  border-left-width: 3px;
+  border-radius: 2px;
+  padding: 6px 8px;
+  background: rgba(198, 144, 38, 0.1);
+}
+
+.consoleWarningLabel {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 20px;
+  align-items: center;
+  border: 1px solid rgba(198, 144, 38, 0.42);
+  border-radius: 2px;
+  padding: 0 6px;
+  color: #ffddb0;
+  background: rgba(198, 144, 38, 0.16);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.consoleValue + .consoleValue {
+  margin-top: 4px;
+}
+
+.resultSuccess,
+.errorView,
+.resultState {
+  margin: 0;
+}
+
+.resultState {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.resultSuccess,
+.errorView {
+  display: grid;
+  gap: 12px;
+}
+
+.errorView {
+  color: var(--danger);
+}
+
+.errorView p {
+  margin: 0;
+  color: var(--text);
+}
+
+.errorView pre {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 10px;
+  color: var(--text);
+  background: var(--surface-subtle);
+}
+
+.emptyState {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

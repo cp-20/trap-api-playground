@@ -1,26 +1,31 @@
 {
   "name": "trap-api-playground",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "test": "vitest run",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
     "gen:api": "tsx scripts/gen-api.ts",
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
+    "jotai": "^2.20.1",
     "lucide-react": "^1.22.0",
     "monaco-editor": "^0.55.1",
+    "openapi-fetch": "^0.17.0",
     "pako": "^3.0.0",
     "prettier": "^3.9.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "yaml": "^2.9.0"
   },
-  "packageManager": "pnpm@11.9.0",
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -30,9 +35,13 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
     "jsdom": "^29.1.1",
+    "openapi-typescript": "^7.13.0",
+    "oxfmt": "^0.57.0",
+    "oxlint": "^1.72.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
     "vite": "^8.1.0",
     "vitest": "^4.1.9"
-  }
+  },
+  "packageManager": "pnpm@11.9.0"
 }

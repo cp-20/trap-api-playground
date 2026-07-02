@@ -1,11 +1,6 @@
-import type {
-  ConsoleLog,
-  MutationLog,
-  NetworkLog,
-  OperationMeta,
-  RuntimeErrorPayload,
-} from "../types";
-import type { RuntimeGlobals } from "../enrichment";
+import type { ConsoleLog, MutationLog, NetworkLog, RuntimeErrorPayload } from "./types";
+import type { OperationMeta } from "../data/types";
+import type { RuntimeGlobals } from "../features/entities/types";
 
 export type WorkerRunMessage = {
   type: "run";

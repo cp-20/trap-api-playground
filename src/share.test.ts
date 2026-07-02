@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { decodeShare, encodeShare } from "./share";
-import type { NotebookSnapshot } from "./types";
+import type { NotebookSnapshot } from "./features/notebook/types";
 
 describe("share encoding", () => {
   it("round-trips notebooks without token fields", () => {

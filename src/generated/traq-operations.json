@@ -1693,7 +1693,7 @@
         "name": "dl",
         "in": "query",
         "required": false,
-        "description": "1を指定するとレスポンスにContent-Dispositionヘッダーが付与されます",
+        "description": "このクエリパラメータは廃止されており、意味を持ちません（現在、このパラメータが0の場合も1の場合もレスポンスにはContent-Dispositionヘッダーが付与されます）",
         "schema": {
           "type": "integer"
         }
