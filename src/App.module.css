@@ -17,7 +17,7 @@
   display: grid;
   grid-template-columns:
     minmax(380px, 1fr) 1px
-    minmax(260px, var(--globals-panel-width, 360px));
+    minmax(300px, var(--docs-panel-width, 380px));
   min-height: 0;
   overflow: hidden;
 }

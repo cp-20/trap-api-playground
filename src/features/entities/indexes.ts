@@ -14,6 +14,11 @@ const arrayOfRecords = (value: unknown): Record<string, unknown>[] => {
     : [];
 };
 
+/**
+ * Normalizes the getChannels response shape. traQ may return either the public
+ * channel array directly or an object with a `public` property depending on the
+ * call path and generated client behavior.
+ */
 const channelRecords = (value: unknown): Record<string, unknown>[] => {
   if (Array.isArray(value)) return arrayOfRecords(value);
   if (!value || typeof value !== "object") return [];
@@ -21,6 +26,10 @@ const channelRecords = (value: unknown): Record<string, unknown>[] => {
   return arrayOfRecords(record.public);
 };
 
+/**
+ * Builds a slash-separated channel path by walking parentId links. The visiting
+ * set prevents malformed cyclic data from recursing forever.
+ */
 const computeFullPath = (
   channel: Record<string, unknown>,
   byId: Map<string, Record<string, unknown>>,
@@ -61,6 +70,11 @@ const compareRecordByStringField = (
     );
 };
 
+/**
+ * Creates lookup maps for entity chips and the runtime globals exposed to cells.
+ * This keeps UI entity resolution and notebook globals derived from the same
+ * loaded traQ data snapshot.
+ */
 export const buildEntityIndexes = (sources: EntityIndexSources): EntityIndexes => {
   const indexes: EntityIndexes = {
     users: new Map(),

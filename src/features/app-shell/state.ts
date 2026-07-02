@@ -1,4 +1,4 @@
 import { atomWithStorage } from "jotai/utils";
 
-export const globalsWidthAtom = atomWithStorage("trap-playground:globals-width", 360);
+export const docsWidthAtom = atomWithStorage("trap-playground:docs-width", 380);
 export const logsHeightAtom = atomWithStorage("trap-playground:logs-height", 260);

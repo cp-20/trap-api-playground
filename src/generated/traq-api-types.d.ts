@@ -2330,7 +2330,6 @@ declare const util: {
   isUuid(value: unknown): boolean;
   now(): string;
 };
-declare const ctx: { state: Record<string, unknown> };
 type TraqChannelWithFullPath = Traq.Channel & { fullPath: string };
 declare const me: Traq.MyUserDetail | null;
 declare const users: Traq.User[];

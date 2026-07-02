@@ -44,6 +44,11 @@ const resolveRef = (ref: string, document: OpenApiDocument): SchemaObject | unde
   return undefined;
 };
 
+/**
+ * Converts the subset of OpenAPI schema shapes used by traQ into ambient
+ * TypeScript. Recursive refs are intentionally collapsed to unknown to keep the
+ * generated playground declarations finite.
+ */
 const schemaToTs = (
   schema: unknown,
   document: OpenApiDocument,
@@ -136,6 +141,11 @@ const resolveParameter = (parameter: SchemaObject, document: OpenApiDocument): S
   return parameter;
 };
 
+/**
+ * Adds missing path parameters inferred from `/foo/{id}` templates. Some specs
+ * omit explicit parameter objects, but the notebook API still needs a typed
+ * `input.path.id`.
+ */
 const pathParametersFromTemplate = (path: string, parameters: SchemaObject[]): SchemaObject[] => {
   const existing = new Set(
     parameters
@@ -153,6 +163,10 @@ const pathParametersFromTemplate = (path: string, parameters: SchemaObject[]): S
     }));
 };
 
+/**
+ * Groups OpenAPI parameters by location into the object passed to api methods,
+ * marking the whole object required when any contained parameter is required.
+ */
 const objectTypeFromParameters = (
   parameters: SchemaObject[],
   location: "path" | "query",
@@ -205,6 +219,10 @@ const requestBodyType = (
   };
 };
 
+/**
+ * Builds the ambient declaration consumed by Monaco. It includes Traq schema
+ * aliases, the generated `api` surface, notebook `util`, and the runtime globals.
+ */
 const buildApiDeclaration = (document: OpenApiDocument): string => {
   const schemaLines = Object.entries(document.components?.schemas ?? {}).map(([name, schema]) => {
     return `  export type ${typeName(name)} = ${schemaToTs(schema, document)};`;
@@ -257,7 +275,6 @@ const buildApiDeclaration = (document: OpenApiDocument): string => {
     `  isUuid(value: unknown): boolean;\n` +
     `  now(): string;\n` +
     `};\n` +
-    `declare const ctx: { state: Record<string, unknown> };\n` +
     `type TraqChannelWithFullPath = Traq.Channel & { fullPath: string };\n` +
     `declare const me: Traq.MyUserDetail | null;\n` +
     `declare const users: Traq.User[];\n` +

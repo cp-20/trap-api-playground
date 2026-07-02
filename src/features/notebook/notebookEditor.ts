@@ -35,6 +35,11 @@ declare const groups: Traq.UserGroup[];
 const RUNTIME_SCOPE_TYPES_PATH = "file:///traq-api-playground-runtime-scope.d.ts";
 const IDENTIFIER_PATTERN = /^[A-Za-z_$][A-Za-z0-9_$]*$/u;
 
+/**
+ * Registers generated traQ declarations with Monaco once per page load. The
+ * import is lazy because the declaration payload is large and only needed after
+ * an editor mounts.
+ */
 const ensureApiTypes = (monaco: Monaco): void => {
   if (apiTypesRegistered) return;
   apiTypesRegistration ??= import("../../generated/traq-api-types").then(({ traqApiTypes }) => {
@@ -99,6 +104,10 @@ const cellIdFromEditor = (editor: MountedEditor, fallback: string): string => {
   return fileName?.endsWith(".ts") ? fileName.slice(0, -3) : fallback;
 };
 
+/**
+ * Turns the worker's runtime-scope snapshot into ambient declarations so values
+ * created in earlier cells get completion and type checking in later cells.
+ */
 const runtimeScopeTypes = (variables: RuntimeScopeVariable[]): string => {
   if (variables.length === 0) return "";
   return variables
@@ -143,6 +152,11 @@ export const useNotebookEditors = ({ editorRefs, runtimeScopeVariables }: Option
   }, [runtimeScopeVariables, updateRuntimeScopeTypes]);
 
   const prepareCodeForRun = useCallback(
+    /**
+     * Emits Monaco's TypeScript model to JavaScript before sending it to the
+     * worker. The trailing module marker is stripped because cells execute as
+     * function bodies inside a scoped runtime, not as ES modules.
+     */
     async (cellId: string, source: string): Promise<string> => {
       const editor = editorRefs.current.get(cellId);
       const model = editor?.getModel();

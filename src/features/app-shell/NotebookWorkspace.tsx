@@ -1,6 +1,6 @@
 import type { Monaco } from "@monaco-editor/react";
 import { useAtomValue, useSetAtom } from "jotai";
-import { GlobalsPanel } from "../globals/GlobalsPanel";
+import { DocsPanel } from "../docs/DocsPanel";
 import { NetworkPanel } from "../network-log/NetworkPanel";
 import { NotebookCellView } from "../notebook/NotebookCellView";
 import type { MountedEditor } from "../notebook/notebookEditor";
@@ -27,8 +27,7 @@ export const NotebookWorkspace = ({
 }: Props) => {
   const cells = useAtomValue(cellsAtom);
   const addCell = useSetAtom(addCellAtom);
-  const { logsPanelStyle, startGlobalsResize, startLogsResize, workspaceStyle } =
-    useResizableLayout();
+  const { logsPanelStyle, startDocsResize, startLogsResize, workspaceStyle } = useResizableLayout();
 
   return (
     <main className={styles.workspace} style={workspaceStyle}>
@@ -70,11 +69,11 @@ export const NotebookWorkspace = ({
       <div
         className={styles.workspaceResizer}
         role="separator"
-        aria-label="Globals パネルの幅を変更"
+        aria-label="Docs パネルの幅を変更"
         aria-orientation="vertical"
-        onPointerDown={startGlobalsResize}
+        onPointerDown={startDocsResize}
       />
-      <GlobalsPanel />
+      <DocsPanel />
     </main>
   );
 };

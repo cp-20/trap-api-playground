@@ -1,0 +1,195 @@
+.docsPanel {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  background: var(--surface);
+}
+
+.paneHeader {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  padding: 7px 10px;
+  background: var(--toolbar);
+}
+
+.paneHeader h2 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 15px;
+}
+
+.paneHeader span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.docsContent {
+  display: grid;
+  gap: 14px;
+  padding: 10px;
+}
+
+.scopeSection,
+.apiSection {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.scopeSection h3,
+.apiSection h3 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 13px;
+}
+
+.scopeList,
+.operationList {
+  display: grid;
+  gap: 8px;
+}
+
+.scopeItem,
+.operationItem {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 8px;
+  background: var(--surface-subtle);
+}
+
+.scopeItem header,
+.operationItem header,
+.apiHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.scopeItem header,
+.operationItem header {
+  justify-content: space-between;
+}
+
+.scopeItem strong {
+  color: var(--text-strong);
+  font-size: 13px;
+}
+
+.scopeItem code,
+.operationItem code,
+.scopeItem pre,
+.operationPath {
+  font-family: var(--font-mono);
+}
+
+.scopeItem header code,
+.operationItem header code {
+  overflow: hidden;
+  color: var(--accent-strong);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scopeItem p,
+.operationItem p {
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.scopeItem pre {
+  overflow: auto;
+  margin: 0;
+  border-radius: 2px;
+  padding: 8px;
+  color: var(--text-strong);
+  background: var(--surface-inset);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.apiHeader {
+  justify-content: space-between;
+}
+
+.apiHeader input {
+  min-width: 0;
+  width: min(220px, 62%);
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0 8px;
+  color: var(--text);
+  background: var(--surface-inset);
+}
+
+.apiHeader input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.apiCount {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.methodBadge,
+.operationMeta span {
+  flex: none;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 1px 6px;
+  color: var(--text-muted);
+  background: var(--surface-inset);
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+.methodGET {
+  color: #96d0ff;
+}
+
+.methodPOST {
+  color: #57ab5a;
+}
+
+.methodPUT,
+.methodPATCH {
+  color: #dcbdfb;
+}
+
+.methodDELETE {
+  color: #f47067;
+}
+
+.operationPath {
+  overflow-wrap: anywhere;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.operationMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+@media (max-width: 860px) {
+  .docsPanel {
+    border-top: 1px solid var(--border);
+    border-left: 0;
+  }
+}

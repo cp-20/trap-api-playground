@@ -5,10 +5,10 @@ import {
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { globalsWidthAtom, logsHeightAtom } from "./state";
+import { docsWidthAtom, logsHeightAtom } from "./state";
 
-const GLOBALS_MIN_WIDTH = 260;
-const GLOBALS_MAX_WIDTH = 720;
+const DOCS_MIN_WIDTH = 300;
+const DOCS_MAX_WIDTH = 760;
 const NOTEBOOK_MIN_WIDTH = 380;
 const LOGS_MIN_HEIGHT = 140;
 const LOGS_MAX_HEIGHT = 520;
@@ -44,13 +44,13 @@ const bindPointerDrag = (
 };
 
 export const useResizableLayout = () => {
-  const [globalsWidth, setGlobalsWidth] = useAtom(globalsWidthAtom);
+  const [docsWidth, setDocsWidth] = useAtom(docsWidthAtom);
   const [logsHeight, setLogsHeight] = useAtom(logsHeightAtom);
 
-  const startGlobalsResize = useCallback((event: ReactPointerEvent<HTMLElement>) => {
+  const startDocsResize = useCallback((event: ReactPointerEvent<HTMLElement>) => {
     bindPointerDrag(event, "vertical", (moveEvent) => {
-      const max = Math.min(GLOBALS_MAX_WIDTH, window.innerWidth - NOTEBOOK_MIN_WIDTH);
-      setGlobalsWidth(clamp(window.innerWidth - moveEvent.clientX, GLOBALS_MIN_WIDTH, max));
+      const max = Math.min(DOCS_MAX_WIDTH, window.innerWidth - NOTEBOOK_MIN_WIDTH);
+      setDocsWidth(clamp(window.innerWidth - moveEvent.clientX, DOCS_MIN_WIDTH, max));
     });
   }, []);
 
@@ -64,9 +64,9 @@ export const useResizableLayout = () => {
   const workspaceStyle = useMemo(
     () =>
       ({
-        "--globals-panel-width": `${globalsWidth}px`,
+        "--docs-panel-width": `${docsWidth}px`,
       }) as CSSProperties,
-    [globalsWidth],
+    [docsWidth],
   );
   const logsPanelStyle = useMemo(
     () =>
@@ -78,7 +78,7 @@ export const useResizableLayout = () => {
 
   return {
     logsPanelStyle,
-    startGlobalsResize,
+    startDocsResize,
     startLogsResize,
     workspaceStyle,
   };

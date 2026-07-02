@@ -11,10 +11,7 @@ import type {
 } from "./types";
 import type { WorkerInboundMessage, WorkerOutboundMessage, WorkerRunMessage } from "./messages";
 
-const ctx = {
-  state: {} as Record<string, unknown>,
-  scope: Object.create(null) as Record<string, unknown>,
-};
+let runtimeScope = Object.create(null) as Record<string, unknown>;
 
 const rateState = new Map<string, number>();
 const REQUEST_TIMEOUT_MS = 30_000;
@@ -26,7 +23,6 @@ const MAX_TYPE_LENGTH = 900;
 const BUILTIN_SCOPE_NAMES = new Set([
   "api",
   "util",
-  "ctx",
   "console",
   "me",
   "users",
@@ -39,6 +35,11 @@ const post = (message: WorkerOutboundMessage): void => {
   self.postMessage(message);
 };
 
+/**
+ * Converts runtime values into something that can cross the worker boundary.
+ * Non-cloneable objects are intentionally reduced to strings so a console log
+ * or cell result never breaks message delivery.
+ */
 const safeValue = (value: unknown): unknown => {
   try {
     structuredClone(value);
@@ -48,6 +49,7 @@ const safeValue = (value: unknown): unknown => {
   }
 };
 
+/** Normalizes thrown values into the structured error payload shown by cells. */
 const serializeError = (error: unknown): RuntimeErrorPayload => {
   if (error && typeof error === "object") {
     const record = error as Record<string, unknown>;
@@ -110,6 +112,11 @@ const limitTypeLength = (typeName: string): string => {
   return typeName.length > MAX_TYPE_LENGTH ? "unknown" : typeName;
 };
 
+/**
+ * Infers lightweight TypeScript declarations for values created in executed
+ * cells. It samples arrays/objects and caps depth/length to keep Monaco extra
+ * libs small even when users assign large API responses.
+ */
 const inferRuntimeType = (value: unknown, depth = 0, seen = new WeakSet<object>()): string => {
   if (value === null) return "null";
 
@@ -172,7 +179,7 @@ const inferRuntimeType = (value: unknown, depth = 0, seen = new WeakSet<object>(
 };
 
 const snapshotRuntimeScope = (): RuntimeScopeVariable[] => {
-  return Object.entries(ctx.scope)
+  return Object.entries(runtimeScope)
     .filter(([name]) => {
       if (!isValidIdentifier(name) || BUILTIN_SCOPE_NAMES.has(name)) return false;
       return !(name in globalThis);
@@ -192,6 +199,7 @@ const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
+/** Wraps fetch with an AbortController and reports timeouts as regular Errors. */
 const fetchWithTimeout = async (
   input: RequestInfo | URL,
   init: RequestInit = {},
@@ -218,6 +226,11 @@ const fetchWithTimeout = async (
 
 const fetchRequestWithTimeout = (request: Request): Promise<Response> => fetchWithTimeout(request);
 
+/**
+ * Applies a small client-side delay per broad route bucket. This is not a full
+ * traQ rate-limit implementation; it just prevents accidental rapid loops from
+ * hammering the same API family.
+ */
 const waitForRateLimit = async (operation: OperationMeta): Promise<void> => {
   const bucket = operation.path.split("/").slice(0, 2).join("/") || "default";
   const now = Date.now();
@@ -255,6 +268,10 @@ const findBeforeOperation = (
   operations.find((candidate) => candidate.path === operation.path && candidate.method === "GET") ??
   null;
 
+/**
+ * Reads the current resource before a mutation so the Network Log can show what
+ * changed and, for JSON PUT/PATCH calls, offer an automatic revert request.
+ */
 const fetchBeforeState = async ({
   operations,
   operation,
@@ -337,6 +354,11 @@ const createMutationLog = (
   };
 };
 
+/**
+ * Builds the notebook-facing api object from operation metadata. Each method is
+ * responsible for auth checks, read-only enforcement, rate pacing, network logs,
+ * response normalization, and mutation history.
+ */
 const createApi = (
   message: WorkerRunMessage,
 ): Record<string, (input?: ApiCallInput) => Promise<unknown>> => {
@@ -483,6 +505,11 @@ const createConsole = (cellId: string): Pick<Console, "log" | "info" | "warn" | 
   };
 };
 
+/**
+ * Finds the start offset of the final top-level statement without using a full
+ * parser. The scanner tracks comments, strings, templates, and bracket depth so
+ * implicit returns do not target nested expressions.
+ */
 const findLastTopLevelStatementStart = (code: string): number => {
   let depth = 0;
   let quote: "'" | '"' | "`" | null = null;
@@ -544,6 +571,10 @@ const findLastTopLevelStatementStart = (code: string): number => {
   return start;
 };
 
+/**
+ * Makes notebook cells expression-friendly by returning the final top-level
+ * expression when the user did not write an explicit return.
+ */
 const withImplicitReturn = (code: string): string => {
   if (/\breturn\b/.test(code)) return code;
 
@@ -564,6 +595,11 @@ const withImplicitReturn = (code: string): string => {
   return `${before}\nreturn (${last});`;
 };
 
+/**
+ * Rewrites top-level variable declarations into assignments against the
+ * runtime scope proxy. That lets values survive across cells while leaving
+ * nested declarations inside functions/blocks untouched.
+ */
 const rewriteTopLevelDeclarations = (code: string): string => {
   let depth = 0;
   let quote: "'" | '"' | "`" | null = null;
@@ -641,6 +677,11 @@ const rewriteTopLevelDeclarations = (code: string): string => {
   return output;
 };
 
+/**
+ * Provides the object used by `with (scope)`. Reads fall back to globalThis for
+ * browser APIs, while writes land in runtimeScope so later cells and Monaco type
+ * inference can see user-created bindings.
+ */
 const createScopeProxy = (scope: Record<string, unknown>): Record<PropertyKey, unknown> => {
   return new Proxy(scope, {
     has(_target, property) {
@@ -689,10 +730,9 @@ const runCell = async (message: WorkerRunMessage): Promise<void> => {
   };
 
   try {
-    Object.assign(ctx.scope, {
+    Object.assign(runtimeScope, {
       api,
       util,
-      ctx,
       console: createConsole(message.cellId),
       me: message.globals.me,
       users: message.globals.users,
@@ -701,7 +741,7 @@ const runCell = async (message: WorkerRunMessage): Promise<void> => {
     });
     const body = rewriteTopLevelDeclarations(withImplicitReturn(message.code));
     const fn = new AsyncFunction("scope", `with (scope) {\n${body}\n}`);
-    const value = await fn(createScopeProxy(ctx.scope));
+    const value = await fn(createScopeProxy(runtimeScope));
     post({
       type: "success",
       runId: message.runId,
@@ -722,8 +762,7 @@ const runCell = async (message: WorkerRunMessage): Promise<void> => {
 
 self.addEventListener("message", (event: MessageEvent<WorkerInboundMessage>) => {
   if (event.data.type === "reset") {
-    ctx.state = {};
-    ctx.scope = Object.create(null) as Record<string, unknown>;
+    runtimeScope = Object.create(null) as Record<string, unknown>;
     rateState.clear();
     postRuntimeScope();
     return;

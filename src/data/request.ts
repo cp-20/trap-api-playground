@@ -34,6 +34,7 @@ export type ApiCallResult = {
   payload: unknown;
 };
 
+/** Replaces OpenAPI path placeholders with encoded user input. */
 const encodePath = (path: string, values: ApiCallInput["path"] = {}): string => {
   return path.replace(/\{([^}]+)\}/g, (_, key: string) => {
     const value = values[key];
@@ -44,6 +45,7 @@ const encodePath = (path: string, values: ApiCallInput["path"] = {}): string => 
   });
 };
 
+/** Appends scalar and repeated query values while skipping nullish entries. */
 const appendQuery = (url: URL, query: ApiCallInput["query"] = {}): void => {
   for (const [key, value] of Object.entries(query)) {
     if (value === null || value === undefined) continue;
@@ -98,6 +100,11 @@ export const buildRequest = (
   };
 };
 
+/**
+ * Converts successful and error responses into notebook-friendly payloads.
+ * JSON responses are parsed, 204 is normalized to null, and other responses are
+ * returned as text when possible.
+ */
 export const parseResponse = async (response: Response): Promise<unknown> => {
   if (response.status === 204) return null;
   const contentType = response.headers.get("content-type") ?? "";
@@ -106,6 +113,12 @@ export const parseResponse = async (response: Response): Promise<unknown> => {
   return text.length > 0 ? text : null;
 };
 
+/**
+ * Calls an operation through openapi-fetch while also capturing the concrete
+ * request that was sent. The captured request is used by logs and mutation
+ * rollback previews, so this function is the bridge between typed OpenAPI calls
+ * and the playground's runtime metadata.
+ */
 export const callTraqApi = async ({
   operation,
   apiBase,

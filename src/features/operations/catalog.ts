@@ -41,6 +41,11 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isParameterLocation = (value: unknown): value is ParameterLocation =>
   typeof value === "string" && PARAMETER_LOCATION_NAMES.has(value);
 
+/**
+ * Narrows raw OpenAPI parameter objects into the compact metadata shape used by
+ * the playground. `$ref` parameters are ignored here because the generator has
+ * already produced typed call signatures from the full OpenAPI document.
+ */
 const asOperationParameter = (parameter: unknown): OperationParameter | null => {
   if (!isRecord(parameter) || "$ref" in parameter) return null;
   if (typeof parameter.name !== "string" || !isParameterLocation(parameter.in)) return null;
@@ -53,6 +58,7 @@ const asOperationParameter = (parameter: unknown): OperationParameter | null => 
   };
 };
 
+/** Combines path-level and operation-level OpenAPI parameters. */
 const mergeParameters = (...groups: unknown[]): OperationParameter[] => {
   return groups
     .flatMap((group) => (Array.isArray(group) ? group : []))
@@ -73,6 +79,11 @@ const toHttpMethod = (methodName: string): HttpMethod | null => {
   return methodName.toUpperCase() as HttpMethod;
 };
 
+/**
+ * Extracts searchable operation metadata from an OpenAPI document. The result is
+ * intentionally smaller than the source spec so it can be shipped to the
+ * browser and reused by docs, runtime API construction, and logging.
+ */
 export const extractOperations = (document: OpenApiDocument): OperationMeta[] => {
   const operations: OperationMeta[] = [];
 
