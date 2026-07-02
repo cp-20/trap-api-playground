@@ -3,6 +3,7 @@
 import { type ApiCallInput, buildRequest, type BuiltRequest, callTraqApi } from "../data/request";
 import type { OperationMeta } from "../features/operations/types";
 import type {
+  ApiCallLogInput,
   ConsoleLog,
   MutationLog,
   NetworkLog,
@@ -245,13 +246,90 @@ const isMutation = (operation: OperationMeta): boolean => {
   return !["GET", "HEAD", "OPTIONS"].includes(operation.method);
 };
 
-const mutationInput = (input: ApiCallInput): MutationLog["request"] => {
+const apiCallLogInput = (input: ApiCallInput): ApiCallLogInput => {
   return {
     path: input.path,
     query: input.query as Record<string, unknown> | undefined,
     body: safeValue(input.body),
     formKeys: input.form ? Object.keys(input.form) : undefined,
   };
+};
+
+const API_CALL_PREVIEW_MAX_LENGTH = 700;
+const API_CALL_PREVIEW_MAX_DEPTH = 3;
+const API_CALL_PREVIEW_MAX_ITEMS = 8;
+
+const formatObjectKey = (key: string): string => {
+  return isValidIdentifier(key) ? key : JSON.stringify(key);
+};
+
+const formatStringLiteral = (value: string): string => {
+  return `'${value
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r")}'`;
+};
+
+const shortenApiCallPreview = (preview: string): string => {
+  if (preview.length <= API_CALL_PREVIEW_MAX_LENGTH) return preview;
+  return `${preview.slice(0, API_CALL_PREVIEW_MAX_LENGTH - 3)}...`;
+};
+
+const formatPreviewValue = (value: unknown, depth = 0, seen = new WeakSet<object>()): string => {
+  if (value === null) return "null";
+  if (value === undefined) return "undefined";
+  if (typeof value === "string") return formatStringLiteral(value);
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (typeof value === "bigint") return `${value}n`;
+  if (typeof value === "symbol" || typeof value === "function") return String(value);
+  if (depth >= API_CALL_PREVIEW_MAX_DEPTH) return "...";
+
+  if (value instanceof Blob) {
+    return value instanceof File
+      ? `{ file: ${formatStringLiteral(value.name)}, size: ${value.size} }`
+      : `{ blob: true, size: ${value.size} }`;
+  }
+
+  if (Array.isArray(value)) {
+    const items = value
+      .slice(0, API_CALL_PREVIEW_MAX_ITEMS)
+      .map((item) => formatPreviewValue(item, depth + 1, seen));
+    if (value.length > API_CALL_PREVIEW_MAX_ITEMS) items.push("...");
+    return `[${items.join(", ")}]`;
+  }
+
+  if (typeof value === "object") {
+    if (seen.has(value)) return "...";
+    seen.add(value);
+    const entries = Object.entries(value as Record<string, unknown>).filter(
+      ([, item]) => item !== undefined,
+    );
+    const items = entries
+      .slice(0, API_CALL_PREVIEW_MAX_ITEMS)
+      .map(
+        ([key, item]) => `${formatObjectKey(key)}: ${formatPreviewValue(item, depth + 1, seen)}`,
+      );
+    if (entries.length > API_CALL_PREVIEW_MAX_ITEMS) items.push("...");
+    return `{ ${items.join(", ")} }`;
+  }
+
+  return String(value);
+};
+
+const formatApiCallPreview = (operation: OperationMeta, input: ApiCallInput): string => {
+  const callInput = {
+    path: input.path,
+    query: input.query,
+    body: input.body,
+    form: input.form
+      ? Object.fromEntries(Object.entries(input.form).map(([key, value]) => [key, value]))
+      : undefined,
+  };
+  const entries = Object.entries(callInput).filter(([, value]) => value !== undefined);
+  const argumentsPreview =
+    entries.length > 0 ? formatPreviewValue(Object.fromEntries(entries)) : "";
+  return shortenApiCallPreview(`api.${operation.operationId}(${argumentsPreview})`);
 };
 
 const normalizePayload = (operation: OperationMeta, payload: unknown): unknown => {
@@ -322,7 +400,7 @@ const createMutationLog = (
     url: request.url,
     status: response.status,
     requestId: response.headers.get("x-request-id"),
-    request: mutationInput(input),
+    request: apiCallLogInput(input),
     before,
     response: safeValue(payload),
     createdAt: Date.now(),
@@ -364,6 +442,29 @@ const createApi = (
 ): Record<string, (input?: ApiCallInput) => Promise<unknown>> => {
   const entries = message.operations.map((operation) => {
     const call = async (input: ApiCallInput = {}) => {
+      const mutation = isMutation(operation);
+      const requestPreview = buildRequest(operation, message.apiBase, input);
+      if (message.readOnly && mutation) {
+        const request = apiCallLogInput(input);
+        const preview = formatApiCallPreview(operation, input);
+        const warning = `api.${operation.operationId} was captured as a dry-run in read-only API mode.`;
+        post({
+          type: "warning",
+          cellId: message.cellId,
+          message: warning,
+          dryRun: preview,
+        });
+        return {
+          dryRun: true,
+          call: preview,
+          api: `api.${operation.operationId}`,
+          operationId: operation.operationId,
+          method: operation.method,
+          url: requestPreview.url,
+          arguments: request,
+        };
+      }
+
       if (!message.accessToken) {
         throw Object.assign(new Error("Login is required before calling traQ API."), {
           name: "AuthError",
@@ -371,19 +472,6 @@ const createApi = (
       }
 
       await waitForRateLimit(operation);
-      const mutation = isMutation(operation);
-      if (message.readOnly && mutation) {
-        const warning = `api.${operation.operationId} is blocked in read-only API mode.`;
-        post({
-          type: "warning",
-          cellId: message.cellId,
-          message: warning,
-        });
-        throw Object.assign(new Error(warning), {
-          name: "ReadOnlyApiError",
-        });
-      }
-      const requestPreview = buildRequest(operation, message.apiBase, input);
       requestPreview.headers.Authorization = `Bearer ${message.accessToken}`;
       const before =
         mutation && ["PUT", "PATCH", "DELETE"].includes(operation.method)

@@ -86,7 +86,7 @@ const configureMonaco = (monaco: Monaco): void => {
     ModuleDetectionKind?: { Force: number };
   };
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-    target: monaco.languages.typescript.ScriptTarget.ES2022,
+    target: monaco.languages.typescript.ScriptTarget.ESNext,
     module: monaco.languages.typescript.ModuleKind.ESNext,
     moduleDetection: typescriptLanguage.ModuleDetectionKind?.Force ?? 3,
     allowNonTsExtensions: true,

@@ -42,7 +42,11 @@ export const CellOutput = ({ cell, consoleLogs }: Props) => {
                 ) : null}
                 {log.values.map((value, index) => (
                   <div className={styles.consoleValue} key={index}>
-                    <JsonView value={value} />
+                    {log.kind === "runtime-warning" && index > 0 && typeof value === "string" ? (
+                      <code className={styles.consoleDryRunCall}>{value}</code>
+                    ) : (
+                      <JsonView value={value} />
+                    )}
                   </div>
                 ))}
               </div>

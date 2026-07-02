@@ -92,7 +92,7 @@ export const useRuntimeWorker = ({ pushToast }: Args) => {
           id: createId("log"),
           cellId: message.cellId,
           level: "warn",
-          values: [message.message],
+          values: message.dryRun ? [message.message, message.dryRun] : [message.message],
           createdAt: Date.now(),
           kind: "runtime-warning",
         };

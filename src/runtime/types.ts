@@ -1,5 +1,12 @@
 import type { HttpMethod } from "../features/operations/types";
 
+export type ApiCallLogInput = {
+  path?: Record<string, string | number | boolean>;
+  query?: Record<string, unknown>;
+  body?: unknown;
+  formKeys?: string[];
+};
+
 export type ConsoleLog = {
   id: string;
   cellId: string;
@@ -39,12 +46,7 @@ export type MutationLog = {
   url: string;
   status: number;
   requestId?: string | null;
-  request: {
-    path?: Record<string, string | number | boolean>;
-    query?: Record<string, unknown>;
-    body?: unknown;
-    formKeys?: string[];
-  };
+  request: ApiCallLogInput;
   before?: unknown;
   response?: unknown;
   createdAt: number;

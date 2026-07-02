@@ -28,7 +28,12 @@ export type WorkerInboundMessage = WorkerRunMessage | WorkerResetMessage;
 
 export type WorkerOutboundMessage =
   | { type: "console"; log: ConsoleLog }
-  | { type: "warning"; cellId: string; message: string }
+  | {
+      type: "warning";
+      cellId: string;
+      message: string;
+      dryRun?: string;
+    }
   | { type: "network"; log: NetworkLog }
   | { type: "mutation"; log: MutationLog }
   | { type: "runtime-scope"; variables: RuntimeScopeVariable[] }
