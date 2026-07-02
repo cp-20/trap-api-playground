@@ -112,6 +112,7 @@
 .cells {
   display: grid;
   gap: 8px;
+  min-width: 0;
   min-height: 0;
   overflow: auto;
   padding: 8px;
@@ -123,6 +124,7 @@
 .cellWithInsert {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 
 .addCellButton {

@@ -130,7 +130,7 @@ export const App = () => {
 
   return (
     <div className={styles.appShell}>
-      <TopBar onLogin={login} onReset={resetRuntime} onShare={() => void shareNotebook()} />
+      <TopBar onReset={resetRuntime} onShare={() => void shareNotebook()} />
       {!token ? (
         <main className={styles.workspace}>
           <AuthGate onLogin={login} />
